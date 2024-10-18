@@ -1,8 +1,9 @@
-package com.fleeksoft.charset.cs
+package com.fleeksoft.charset.cs.other
 
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
+import com.fleeksoft.charset.cs.SingleByte
 
 class KOI8_R private constructor() : Charset("KOI8-R") {
 

@@ -1,10 +1,14 @@
-package com.fleeksoft.charset.cs
+package com.fleeksoft.charset.cs.other
 
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.CodingErrorAction
+import com.fleeksoft.charset.cs.ArrayDecoder
+import com.fleeksoft.charset.cs.ArrayEncoder
+import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.cs.Unicode
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
