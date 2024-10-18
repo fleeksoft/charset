@@ -28,8 +28,9 @@ Add the following dependencies to your project:
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.fleeksoft.charset:charset:<version>")
-    implementation("com.fleeksoft.charset:charset-ext:<version>")
+    implementation("com.fleeksoft.charset:charset:<version>") //only standard charsets
+   //or
+    implementation("com.fleeksoft.charset:charset-ext:<version>") // standard + extended charsets
 }
 ```
 
