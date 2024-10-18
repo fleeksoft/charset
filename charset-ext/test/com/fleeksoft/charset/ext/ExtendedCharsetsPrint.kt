@@ -5,8 +5,8 @@ import kotlin.test.Test
 
 class ExtendedCharsetsPrint {
     fun charset(name: String, className: String, aliases: Array<String>) {
-        val normalizedAliases = aliases.map { Charset.Companion.normalizeCharsetName(it) }.toMutableSet()
-        normalizedAliases.add(Charset.Companion.normalizeCharsetName(name))
+        val normalizedAliases = aliases.map { Charset.normalizeCharsetName(it) }.toMutableSet()
+        normalizedAliases.add(Charset.normalizeCharsetName(name))
 
         println("${normalizedAliases.joinToString(", ") { "\"$it\"" }} -> { ${className}() }")
     }

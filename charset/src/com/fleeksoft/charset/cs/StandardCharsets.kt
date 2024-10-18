@@ -5,6 +5,10 @@ import com.fleeksoft.charset.spi.CharsetProvider
 import com.fleeksoft.charset.cs.ibm.*
 import com.fleeksoft.charset.cs.iso.*
 import com.fleeksoft.charset.cs.ms.*
+import com.fleeksoft.charset.cs.other.CESU_8
+import com.fleeksoft.charset.cs.other.GB18030
+import com.fleeksoft.charset.cs.other.KOI8_R
+import com.fleeksoft.charset.cs.other.KOI8_U
 import com.fleeksoft.charset.cs.utf.*
 
 class StandardCharsets : CharsetProvider() {

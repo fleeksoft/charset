@@ -22,11 +22,11 @@ class HKSCS {
         }
 
         override fun decodeDouble(b1: Int, b2: Int): Char {
-            return b2cBmp[b1]!![b2 - Companion.b2Min]
+            return b2cBmp[b1]!![b2 - b2Min]
         }
 
         open fun decodeDoubleEx(b1: Int, b2: Int): Char {
-            return b2cSupp!![b1]!![b2 - Companion.b2Min]
+            return b2cSupp!![b1]!![b2 - b2Min]
         }
 
         override fun decodeArrayLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
@@ -48,7 +48,7 @@ class HKSCS {
                         if (sl - sp < 2) return CoderResult.UNDERFLOW
                         val b2 = sa[sp + 1].toInt() and 0xff
                         inSize++
-                        if (b2 < Companion.b2Min || b2 > Companion.b2Max) return CoderResult.unmappableForLength(
+                        if (b2 < b2Min || b2 > b2Max) return CoderResult.unmappableForLength(
                             2
                         )
                         c = decodeDouble(b1, b2) //bmp
@@ -92,7 +92,7 @@ class HKSCS {
                         if (src.remaining() < 1) return CoderResult.UNDERFLOW
                         val b2 = src.get() and 0xff
                         inSize++
-                        if (b2 < Companion.b2Min || b2 > Companion.b2Max) return CoderResult.unmappableForLength(
+                        if (b2 < b2Min || b2 > b2Max) return CoderResult.unmappableForLength(
                             2
                         )
                         c = decodeDouble(b1, b2) //bmp
@@ -134,7 +134,7 @@ class HKSCS {
                         c = repl
                     } else {
                         val b2 = src[sp++].toInt() and 0xff
-                        if (b2 < Companion.b2Min || b2 > Companion.b2Max) {
+                        if (b2 < b2Min || b2 > b2Max) {
                             c = repl
                         } else if ((decodeDouble(b1, b2).also { c = it }) == CharsetMapping.UNMAPPABLE_DECODING) {
                             c = decodeDoubleEx(b1, b2) //supp
