@@ -9,6 +9,9 @@ import com.fleeksoft.charset.cs.DelegatableDecoder
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.cs.jis.JIS_X_0201
+import com.fleeksoft.charset.cs.jis.JIS_X_0208
+import com.fleeksoft.charset.cs.jis.JIS_X_0212
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character

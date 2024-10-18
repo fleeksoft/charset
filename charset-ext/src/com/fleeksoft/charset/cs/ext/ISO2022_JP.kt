@@ -6,6 +6,8 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.CodingErrorAction
 import com.fleeksoft.charset.cs.*
+import com.fleeksoft.charset.cs.jis.JIS_X_0201
+import com.fleeksoft.charset.cs.jis.JIS_X_0208
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character

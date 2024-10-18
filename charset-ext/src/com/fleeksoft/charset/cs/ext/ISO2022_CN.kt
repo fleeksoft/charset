@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.US_ASCII
+import com.fleeksoft.charset.cs.euc.EUC_CN
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import kotlin.experimental.or

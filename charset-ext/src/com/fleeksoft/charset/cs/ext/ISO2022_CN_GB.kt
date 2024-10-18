@@ -3,16 +3,13 @@ package com.fleeksoft.charset.cs.ext
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
+import com.fleeksoft.charset.cs.euc.EUC_CN
 
 
 class ISO2022_CN_GB : ISO2022("x-ISO-2022-CN-GB") {
     fun contains(cs: Charset): Boolean {
         // overlapping repertoire of EUC_CN, GB2312
         return ((cs is EUC_CN) || (cs.name == "US-ASCII") || (cs is ISO2022_CN_GB))
-    }
-
-    fun historicalName(): String? {
-        return "ISO2022CN_GB"
     }
 
     override fun newDecoder(): CharsetDecoder {

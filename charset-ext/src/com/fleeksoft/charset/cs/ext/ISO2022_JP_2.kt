@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
+import com.fleeksoft.charset.cs.jis.JIS_X_0212
 
 class ISO2022_JP_2 : ISO2022_JP("ISO-2022-JP-2") {
     fun historicalName(): String? {

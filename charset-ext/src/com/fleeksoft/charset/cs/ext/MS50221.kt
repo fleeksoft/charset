@@ -1,6 +1,7 @@
 package com.fleeksoft.charset.cs.ext
 
 import com.fleeksoft.charset.Charset
+import com.fleeksoft.charset.cs.jis.JIS_X_0212
 
 class MS50221 : MS50220("x-windows-50221") {
 

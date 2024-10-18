@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
+import com.fleeksoft.charset.cs.jis.JIS_X_0212
 
 open class MS50220 : ISO2022_JP {
     constructor() : super("x-windows-50220")
