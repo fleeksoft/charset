@@ -9,10 +9,12 @@ This library consists of two modules:
 1. **charset**:
     - Contains only standard charsets.
     - Ideal for basic character encoding needs.
+    - Check [Standard Charsets List](STANDARD_CHARSETS.md)
 
 2. **charset-ext**:
     - Extends the functionality by providing support for additional character sets.
     - Useful for applications that require a broader range of character encoding.
+    - Check [Extended Charsets List](EXTENDED_CHARSETS.md)
 
 ## Features
 
