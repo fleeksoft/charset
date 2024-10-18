@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
+import com.fleeksoft.charset.cs.jis.JIS_X_0201
 
 class MS932 : Charset("windows-31j") {
     fun historicalName(): String? {

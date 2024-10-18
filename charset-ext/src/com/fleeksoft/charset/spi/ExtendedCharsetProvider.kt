@@ -50,9 +50,6 @@ class ExtendedCharsetProvider : CharsetProvider() {
                 GBK()
             }
 
-            "gb2312", "gb231280", "gb23121980", "euccn", "xeuccn" -> {
-                EUC_CN()
-            }
 
             "ms936", "xmswin936" -> {
                 MS936()
@@ -65,31 +62,8 @@ class ExtendedCharsetProvider : CharsetProvider() {
             "ms932", "windows932", "cswindows31j", "windows31j" -> {
                 MS932()
             }
-
-            "jis0201", "jisx0201", "x0201", "cshalfwidthkatakana" -> {
-                JIS_X_0201()
-            }
-
-            "jis0208", "jisc62261983", "isoir87", "x0208", "jisx02081983", "csiso87jisx0208", "xjis0208" -> {
-                JIS_X_0208()
-            }
-
-            "jis0212", "jisx02121990", "x0212", "isoir159", "csiso159jisx02121990" -> {
-                JIS_X_0212()
-            }
 //            "sjis0213", "sjis:2004", "sjis0213:2004", "shiftjis0213:2004", "shiftjis:2004", "xsjis0213" -> { SJIS_0213() }
 //            "ms9320213", "ms932:2004", "windows9320213", "windows932:2004", "xms9320213" -> { MS932_0213() }
-            "eucjp", "eucjis", "extendedunixcodepackedformatforjapanese", "cseucpkdfmtjapanese", "xeucjp" -> {
-                EUC_JP()
-            }
-
-            "eucjplinux", "xeucjplinux" -> {
-                EUC_JP_LINUX()
-            }
-
-            "eucjpsolaris", "eucjpopen", "xeucjpopen" -> {
-                EUC_JP_Open()
-            }
 
             "pck", "xpck" -> {
                 PCK()
@@ -117,10 +91,6 @@ class ExtendedCharsetProvider : CharsetProvider() {
 
             "jisautodetect", "xjisautodetect" -> {
                 JISAutoDetect()
-            }
-
-            "euckr", "ksc5601", "ksc56011987", "cseuckr", "5601" -> {
-                EUC_KR()
             }
 
             "ms949", "windows949", "xwindows949" -> {

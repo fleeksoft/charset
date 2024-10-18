@@ -1,9 +1,17 @@
 package com.fleeksoft.charset.cs
 
 import com.fleeksoft.charset.Charset
+import com.fleeksoft.charset.cs.euc.EUC_CN
+import com.fleeksoft.charset.cs.euc.EUC_JP
+import com.fleeksoft.charset.cs.euc.EUC_JP_LINUX
+import com.fleeksoft.charset.cs.euc.EUC_JP_Open
+import com.fleeksoft.charset.cs.euc.EUC_KR
 import com.fleeksoft.charset.spi.CharsetProvider
 import com.fleeksoft.charset.cs.ibm.*
 import com.fleeksoft.charset.cs.iso.*
+import com.fleeksoft.charset.cs.jis.JIS_X_0201
+import com.fleeksoft.charset.cs.jis.JIS_X_0208
+import com.fleeksoft.charset.cs.jis.JIS_X_0212
 import com.fleeksoft.charset.cs.ms.*
 import com.fleeksoft.charset.cs.other.CESU_8
 import com.fleeksoft.charset.cs.other.GB18030
@@ -255,7 +263,53 @@ class StandardCharsets : CharsetProvider() {
             "cscesu8" to { CESU_8.INSTANCE },
             "gb18030" to { GB18030.INSTANCE },
             "gb180302022" to { GB18030.INSTANCE },
-            "gb180302000" to { GB18030.INSTANCE }
+            "gb180302000" to { GB18030.INSTANCE },
+
+            //moved from extended
+
+            "gb2312" to { EUC_CN.INSTANCE },
+            "gb231280" to { EUC_CN.INSTANCE },
+            "gb23121980" to { EUC_CN.INSTANCE },
+            "euccn" to { EUC_CN.INSTANCE },
+            "xeuccn" to { EUC_CN.INSTANCE },
+
+            "jis0201" to { JIS_X_0201.INSTANCE },
+            "jisx0201" to { JIS_X_0201.INSTANCE },
+            "x0201" to { JIS_X_0201.INSTANCE },
+            "cshalfwidthkatakana" to { JIS_X_0201.INSTANCE },
+
+            "jis0208" to { JIS_X_0208.INSTANCE },
+            "jisc62261983" to { JIS_X_0208.INSTANCE },
+            "isoir87" to { JIS_X_0208.INSTANCE },
+            "x0208" to { JIS_X_0208.INSTANCE },
+            "jisx02081983" to { JIS_X_0208.INSTANCE },
+            "csiso87jisx0208" to { JIS_X_0208.INSTANCE },
+            "xjis0208" to { JIS_X_0208.INSTANCE },
+
+            "jis0212" to { JIS_X_0212.INSTANCE },
+            "jisx02121990" to { JIS_X_0212.INSTANCE },
+            "x0212" to { JIS_X_0212.INSTANCE },
+            "isoir159" to { JIS_X_0212.INSTANCE },
+            "csiso159jisx02121990" to { JIS_X_0212.INSTANCE },
+
+            "eucjp" to { EUC_JP.INSTANCE },
+            "eucjis" to { EUC_JP.INSTANCE },
+            "extendedunixcodepackedformatforjapanese" to { EUC_JP.INSTANCE },
+            "cseucpkdfmtjapanese" to { EUC_JP.INSTANCE },
+            "xeucjp" to { EUC_JP.INSTANCE },
+
+            "eucjplinux" to { EUC_JP_LINUX.INSTANCE },
+            "xeucjplinux" to { EUC_JP_LINUX.INSTANCE },
+
+            "eucjpsolaris" to { EUC_JP_Open.INSTANCE },
+            "eucjpopen" to { EUC_JP_Open.INSTANCE },
+            "xeucjpopen" to { EUC_JP_Open.INSTANCE },
+
+            "euckr" to { EUC_KR.INSTANCE },
+            "ksc5601" to { EUC_KR.INSTANCE },
+            "ksc56011987" to { EUC_KR.INSTANCE },
+            "cseuckr" to { EUC_KR.INSTANCE },
+            "5601" to { EUC_KR.INSTANCE }
         )
     }
 
