@@ -11,9 +11,7 @@ import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character
 
 class ISCII91 : Charset("x-ISCII91") {
-    fun historicalName(): String? {
-        return "ISCII91"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII")

@@ -8,9 +8,7 @@ import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
 class MacUkraine : Charset("x-MacUkraine") {
-    fun historicalName(): String? {
-        return "MacUkraine"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return (cs is MacUkraine)

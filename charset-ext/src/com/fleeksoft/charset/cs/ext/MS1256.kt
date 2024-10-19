@@ -8,9 +8,7 @@ import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
 class MS1256 : Charset("windows-1256") {
-    fun historicalName(): String? {
-        return "Cp1256"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII") || (cs is MS1256))

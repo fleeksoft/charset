@@ -8,9 +8,7 @@ import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
 class ISO_8859_3 : Charset("ISO-8859-3") {
-    fun historicalName(): String? {
-        return "ISO8859_3"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII") || (cs is ISO_8859_3))

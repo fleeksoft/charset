@@ -11,9 +11,7 @@ class ISO2022_CN_CNS : ISO2022("x-ISO-2022-CN-CNS") {
         return ((cs is EUC_TW) || (cs.name == "US-ASCII") || (cs is ISO2022_CN_CNS))
     }
 
-    fun historicalName(): String? {
-        return "ISO2022CN_CNS"
-    }
+    
 
     override fun newDecoder(): CharsetDecoder {
         return ISO2022_CN.Decoder(this)

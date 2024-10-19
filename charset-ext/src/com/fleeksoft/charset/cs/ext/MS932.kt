@@ -7,9 +7,7 @@ import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.jis.JIS_X_0201
 
 class MS932 : Charset("windows-31j") {
-    fun historicalName(): String? {
-        return "MS932"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII") || (cs is JIS_X_0201) || (cs is MS932))
