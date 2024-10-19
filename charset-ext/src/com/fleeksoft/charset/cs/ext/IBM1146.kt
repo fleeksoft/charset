@@ -9,9 +9,7 @@ import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
 class IBM1146 : Charset("IBM01146") {
-    fun historicalName(): String? {
-        return "Cp1146"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return (cs is IBM1146)

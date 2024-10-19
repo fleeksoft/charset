@@ -8,9 +8,7 @@ import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
 class MacRoman : Charset("x-MacRoman") {
-    fun historicalName(): String? {
-        return "MacRoman"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return (cs is MacRoman)

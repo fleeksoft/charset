@@ -7,9 +7,7 @@ import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.jis.JIS_X_0212
 
 class ISO2022_JP_2 : ISO2022_JP("ISO-2022-JP-2") {
-    fun historicalName(): String? {
-        return "ISO2022JP2"
-    }
+    
 
     override fun contains(cs: Charset): Boolean {
         return super.contains(cs) || (cs is JIS_X_0212) || (cs is ISO2022_JP_2)

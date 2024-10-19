@@ -12,9 +12,7 @@ class JIS_X_0201 : Charset("JIS_X0201") {
         val INSTANCE = JIS_X_0201()
     }
 
-    fun historicalName(): String? {
-        return "JIS_X0201"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII") || (cs is JIS_X_0201))

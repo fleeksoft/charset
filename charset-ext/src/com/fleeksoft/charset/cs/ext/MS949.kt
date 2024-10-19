@@ -6,9 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
 class MS949 : Charset("x-windows-949") {
-    fun historicalName(): String? {
-        return "MS949"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII") || (cs is MS949))

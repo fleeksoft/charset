@@ -6,9 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
 class IBM939 : Charset("x-IBM939") {
-    fun historicalName(): String? {
-        return "Cp939"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return (cs is IBM939)

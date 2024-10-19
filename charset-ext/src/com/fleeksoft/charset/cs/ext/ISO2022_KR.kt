@@ -22,9 +22,7 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                 (cs is ISO2022_KR))
     }
 
-    fun historicalName(): String? {
-        return "ISO2022KR"
-    }
+    
 
     override fun newDecoder(): CharsetDecoder {
         return Decoder(this)

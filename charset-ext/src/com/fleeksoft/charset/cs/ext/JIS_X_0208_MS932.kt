@@ -6,9 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
 class JIS_X_0208_MS932 : Charset("x-JIS0208_MS932") {
-    fun historicalName(): String? {
-        return "JIS_X_0208_MS932"
-    }
+    
 
     fun contains(cs: Charset): Boolean {
         return (cs is JIS_X_0208_MS932)
