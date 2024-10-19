@@ -8,7 +8,12 @@ class ExtendedCharsetsPrint {
         val normalizedAliases = aliases.map { Charset.normalizeCharsetName(it) }.toMutableSet()
         normalizedAliases.add(Charset.normalizeCharsetName(name))
 
-        println("${normalizedAliases.joinToString(", ") { "\"$it\"" }} -> { ${className}() }")
+//        println("${normalizedAliases.joinToString(", ") { "\"$it\"" }} -> { ${className}() }")
+        /*normalizedAliases.forEach { alias ->
+            println("\"${alias}\" to \"$className\",")
+        }*/
+
+        println("\"${className}\" to { $className() },")
     }
 
     fun printCharsets() {
