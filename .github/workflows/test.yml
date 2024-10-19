@@ -19,7 +19,7 @@ jobs:
           { target: linux, os: ubuntu-latest, tasks: linuxX64Test, continueOnError: false },
         ]
     runs-on: ${{ matrix.config.os }}
-    name: Build ${{ matrix.config.target }}
+    name: Test ${{ matrix.config.target }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup JDK 17
