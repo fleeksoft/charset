@@ -16,6 +16,7 @@ expect abstract class Buffer {
     open fun reset(): Buffer
     open fun rewind(): Buffer
     abstract fun array(): Any
+    abstract fun hasArray(): Boolean
     abstract fun slice(): Buffer
     abstract fun slice(index: Int, length: Int): Buffer
     abstract fun duplicate(): Buffer

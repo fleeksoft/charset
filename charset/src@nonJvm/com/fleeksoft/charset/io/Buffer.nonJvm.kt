@@ -78,6 +78,7 @@ actual abstract class Buffer(
 
     actual abstract fun arrayOffset(): Int
     actual abstract fun array(): Any
+    actual abstract fun hasArray(): Boolean
     actual abstract fun slice(): Buffer
     actual abstract fun slice(index: Int, length: Int): Buffer
     actual abstract fun duplicate(): Buffer

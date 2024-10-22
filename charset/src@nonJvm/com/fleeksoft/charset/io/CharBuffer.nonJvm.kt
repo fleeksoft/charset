@@ -199,6 +199,8 @@ actual abstract class CharBuffer(
         return charArray
     }
 
+    actual final override fun hasArray(): Boolean = true
+
     actual final override fun arrayOffset(): Int {
         if (readOnly)
             throw ReadOnlyBufferException()

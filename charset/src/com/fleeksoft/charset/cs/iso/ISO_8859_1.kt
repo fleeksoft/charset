@@ -70,7 +70,11 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1", null) {
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
     }
 
@@ -141,7 +145,11 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1", null) {
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-            return encodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

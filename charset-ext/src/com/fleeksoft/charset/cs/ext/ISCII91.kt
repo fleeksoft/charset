@@ -292,11 +292,12 @@ class ISCII91 : Charset("x-ISCII91", null) {
             }
         }
 
-        override fun decodeLoop(
-            src: ByteBuffer,
-            dst: CharBuffer
-        ): CoderResult {
-            return decodeArrayLoop(src, dst)
+        override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         companion object {
@@ -440,11 +441,12 @@ class ISCII91 : Charset("x-ISCII91", null) {
             }
         }
 
-        override fun encodeLoop(
-            src: CharBuffer,
-            dst: ByteBuffer
-        ): CoderResult {
-            return encodeArrayLoop(src, dst)
+        override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

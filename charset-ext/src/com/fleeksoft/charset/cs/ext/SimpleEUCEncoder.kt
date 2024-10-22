@@ -219,7 +219,11 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
     }
 
     override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-        return encodeArrayLoop(src, dst)
+        return if (src.hasArray() && dst.hasArray()) {
+            encodeArrayLoop(src, dst)
+        } else {
+            encodeBufferLoop(src, dst)
+        }
     }
 
     fun encode(inputChar: Char): Byte {

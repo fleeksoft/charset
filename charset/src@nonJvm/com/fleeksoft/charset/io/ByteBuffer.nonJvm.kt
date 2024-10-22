@@ -162,6 +162,8 @@ actual abstract class ByteBuffer(
         return byteArray
     }
 
+    actual final override fun hasArray(): Boolean = true
+
     actual final override fun arrayOffset(): Int {
         if (isReadOnly())
             throw ReadOnlyBufferException()

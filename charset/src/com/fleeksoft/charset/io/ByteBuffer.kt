@@ -23,6 +23,7 @@ expect abstract class ByteBuffer : Buffer, Comparable<ByteBuffer> {
     fun put(index: Int, src: ByteBuffer, offset: Int, length: Int): ByteBuffer
 
     final override fun array(): ByteArray
+    final override fun hasArray(): Boolean
     final override fun arrayOffset(): Int
     override fun position(pos: Int): ByteBuffer
     override fun limit(newLimit: Int): ByteBuffer

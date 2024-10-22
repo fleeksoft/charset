@@ -152,7 +152,11 @@ class EUC_JP : Charset("EUC-JP", null) {
 
         // Make some protected methods public for use by JISAutoDetect
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         override fun implReset() {
@@ -330,7 +334,11 @@ class EUC_JP : Charset("EUC-JP", null) {
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-            return encodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

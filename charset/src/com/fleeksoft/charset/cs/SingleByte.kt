@@ -130,7 +130,11 @@ object SingleByte {
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         fun decode(b: Int): Char {
@@ -258,7 +262,11 @@ object SingleByte {
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-            return encodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         fun encode(ch: Char): Int {

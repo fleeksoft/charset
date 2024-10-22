@@ -325,7 +325,11 @@ class ISO2022_CN : Charset("ISO-2022-CN", null) {
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

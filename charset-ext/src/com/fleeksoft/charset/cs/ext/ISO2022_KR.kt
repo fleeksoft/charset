@@ -258,11 +258,12 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
             }
         }
 
-        override fun decodeLoop(
-            src: ByteBuffer,
-            dst: CharBuffer
-        ): CoderResult {
-            return decodeArrayLoop(src, dst)
+        override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

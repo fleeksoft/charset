@@ -25,6 +25,7 @@ expect abstract class CharBuffer : Buffer, Comparable<CharBuffer>, Appendable, R
     open fun put(src: String, start: Int, end: Int): CharBuffer
 
     final override fun array(): CharArray
+    final override fun hasArray(): Boolean
     final override fun arrayOffset(): Int
     final override fun position(pos: Int): CharBuffer
     final override fun limit(newLimit: Int): CharBuffer

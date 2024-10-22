@@ -351,7 +351,11 @@ open class ISO2022_JP : Charset {
 
         // Make some protected methods public for use by JISAutoDetect
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         override fun implFlush(out: CharBuffer): CoderResult {
@@ -612,7 +616,11 @@ open class ISO2022_JP : Charset {
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-            return encodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         companion object {

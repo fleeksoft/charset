@@ -386,11 +386,12 @@ class UTF_8 : Unicode("UTF-8") {
                 return CoderResultInternal.UNDERFLOW
             }
 
-            override fun encodeLoop(
-                src: CharBuffer,
-                dst: ByteBuffer
-            ): CoderResult {
-                return encodeArrayLoop(src, dst)
+            override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
+                return if (src.hasArray() && dst.hasArray()) {
+                    encodeArrayLoop(src, dst)
+                } else {
+                    encodeBufferLoop(src, dst)
+                }
             }
 
             companion object {

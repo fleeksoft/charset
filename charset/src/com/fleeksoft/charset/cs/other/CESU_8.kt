@@ -182,7 +182,11 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            return decodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         // returns -1 if there is/are malformed byte(s) and the
@@ -471,7 +475,11 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
-            return encodeArrayLoop(src, dst)
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
 
         // returns -1 if there is malformed char(s) and the

@@ -294,11 +294,12 @@ class GB18030 private constructor() : Charset("GB18030", null) {
         }
 
 
-        override fun decodeLoop(
-            src: ByteBuffer,
-            dst: CharBuffer
-        ): CoderResult {
-            return decodeArrayLoop(src, dst)
+        override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
+            return if (src.hasArray() && dst.hasArray()) {
+                decodeArrayLoop(src, dst)
+            } else {
+                decodeBufferLoop(src, dst)
+            }
         }
 
         companion object {
@@ -514,11 +515,12 @@ class GB18030 private constructor() : Charset("GB18030", null) {
             }
         }
 
-        override fun encodeLoop(
-            src: CharBuffer,
-            dst: ByteBuffer
-        ): CoderResult {
-            return encodeArrayLoop(src, dst)
+        override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
+            return if (src.hasArray() && dst.hasArray()) {
+                encodeArrayLoop(src, dst)
+            } else {
+                encodeBufferLoop(src, dst)
+            }
         }
     }
 
