@@ -8,24 +8,24 @@ class CharBufferTest {
 
     @Test
     fun initTest(){
-        val b1 = CharBuffer.allocate(10)
+        val b1 = CharBufferFactory.allocate(10)
         assertEquals(0, b1.position())
         assertEquals(10, b1.limit())
-        assertEquals(10, b1.capacity)
+        assertEquals(10, b1.capacity())
         b1.flip()
         assertEquals(0, b1.limit())
 
-        val b2 = CharBuffer.wrap(CharArray(5), 0, 3)
+        val b2 = CharBufferFactory.wrap(CharArray(5), 0, 3)
         assertEquals(0, b2.position())
         assertEquals(3, b2.limit())
-        assertEquals(5, b2.capacity)
+        assertEquals(5, b2.capacity())
     }
 
     // Test buffer initialization
     @Test
     fun testBufferInitialization() {
-        val buffer = CharBuffer.allocate(10)
-        assertEquals(10, buffer.capacity)
+        val buffer = CharBufferFactory.allocate(10)
+        assertEquals(10, buffer.capacity())
         assertEquals(0, buffer.position())
         assertEquals(10, buffer.limit())
     }
@@ -33,7 +33,7 @@ class CharBufferTest {
     // Test writing characters to the buffer
     @Test
     fun testWriteCharacters() {
-        val buffer = CharBuffer.allocate(10)
+        val buffer = CharBufferFactory.allocate(10)
         buffer.put('A')
         buffer.put('B')
         buffer.put('C')
@@ -47,7 +47,7 @@ class CharBufferTest {
     // Test reading characters from the buffer
     @Test
     fun testReadCharacters() {
-        val buffer = CharBuffer.allocate(10)
+        val buffer = CharBufferFactory.allocate(10)
         buffer.put('X')
         buffer.put('Y')
         buffer.put('Z')
@@ -61,7 +61,7 @@ class CharBufferTest {
     // Test buffer overflow
     @Test
     fun testBufferOverflow() {
-        val buffer = CharBuffer.allocate(2)
+        val buffer = CharBufferFactory.allocate(2)
         buffer.put('A')
         buffer.put('B')
 
@@ -73,7 +73,7 @@ class CharBufferTest {
     // Test buffer underflow
     @Test
     fun testBufferUnderflow() {
-        val buffer = CharBuffer.allocate(2)
+        val buffer = CharBufferFactory.allocate(2)
         buffer.put('A')
         buffer.flip() // Prepare for reading
         buffer.get()  // Read once
@@ -86,18 +86,18 @@ class CharBufferTest {
     // Test clear method
     @Test
     fun testClear() {
-        val buffer = CharBuffer.allocate(5)
+        val buffer = CharBufferFactory.allocate(5)
         buffer.put('A')
         buffer.clear()
 
         assertEquals(0, buffer.position())
-        assertEquals(buffer.limit(), buffer.capacity)
+        assertEquals(buffer.limit(), buffer.capacity())
     }
 
     // Test marking and resetting the buffer
     @Test
     fun testMarkAndReset() {
-        val buffer = CharBuffer.allocate(5)
+        val buffer = CharBufferFactory.allocate(5)
         buffer.put('A')
         buffer.put('B')
         buffer.put('C')
@@ -114,7 +114,7 @@ class CharBufferTest {
     // Test buffer position manipulation
     @Test
     fun testPositionManipulation() {
-        val buffer = CharBuffer.allocate(10)
+        val buffer = CharBufferFactory.allocate(10)
         buffer.put('A')
         buffer.put('B')
         buffer.position(0) // Reset position
@@ -126,8 +126,8 @@ class CharBufferTest {
     // Test limit and capacity
     @Test
     fun testLimitAndCapacity() {
-        val buffer = CharBuffer.allocate(5)
-        assertEquals(5, buffer.capacity)
+        val buffer = CharBufferFactory.allocate(5)
+        assertEquals(5, buffer.capacity())
         buffer.limit(3)
         assertEquals(3, buffer.limit())
 

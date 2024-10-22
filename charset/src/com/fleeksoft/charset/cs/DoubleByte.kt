@@ -7,6 +7,7 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.min
 
@@ -94,12 +95,12 @@ object DoubleByte {
             var mark: Int = src.position()
             try {
                 while (src.hasRemaining() && dst.hasRemaining()) {
-                    val b1: Int = src.get() and 0xff
+                    val b1: Int = src.getInt() and 0xff
                     var c = b2cSB!![b1]
                     var inSize = 1
                     if (c == CharsetMapping.UNMAPPABLE_DECODING) {
                         if (src.remaining() < 1) return crMalformedOrUnderFlow(b1)
-                        val b2: Int = src.get() and 0xff
+                        val b2: Int = src.getInt() and 0xff
                         if (b2 < b2Min || b2 > b2Max || (b2c!![b1]!![b2 - b2Min].also {
                                 c = it
                             }) == CharsetMapping.UNMAPPABLE_DECODING) return crMalformedOrUnmappable(
@@ -238,7 +239,7 @@ object DoubleByte {
             var mark: Int = src.position()
             try {
                 while (src.hasRemaining()) {
-                    val b1: Int = src.get() and 0xff
+                    val b1: Int = src.getInt() and 0xff
                     var inSize = 1
                     if (b1 == SO) {  // Shift out
                         if (currentState != SBCS) return CoderResult.malformedForLength(1)
@@ -253,7 +254,7 @@ object DoubleByte {
                             if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(1)
                         } else {
                             if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                            val b2: Int = src.get() and 0xff
+                            val b2: Int = src.getInt() and 0xff
                             if (b2 < b2Min || b2 > b2Max || (b2c!![b1]!![b2 - b2Min].also { c = it }) == CharsetMapping.UNMAPPABLE_DECODING) {
                                 if (!isDoubleByte(b1, b2)) return CoderResult.malformedForLength(2)
                                 return CoderResult.unmappableForLength(2)

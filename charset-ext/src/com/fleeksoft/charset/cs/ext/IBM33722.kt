@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 
 
 open class IBM33722 : Charset("x-IBM33722") {
@@ -100,11 +101,11 @@ open class IBM33722 : Charset("x-IBM33722") {
                     val byte2: Int
                     var inputSize = 1
                     val outputChar: Char
-                    byte1 = src.get() and 0xff
+                    byte1 = src.getInt() and 0xff
 
                     if (byte1 == SS2) {
                         if (!src.hasRemaining()) return CoderResult.UNDERFLOW
-                        byte1 = src.get() and 0xff
+                        byte1 = src.getInt() and 0xff
                         inputSize = 2
                         if (byte1 < 0xa1 || byte1 > 0xfe) {   //valid first byte for G2
                             return CoderResult.malformedForLength(2)
@@ -113,11 +114,11 @@ open class IBM33722 : Charset("x-IBM33722") {
                     } else if (byte1 == SS3) {                 //G3
                         if (src.remaining() < 2) return CoderResult.UNDERFLOW
 
-                        byte1 = src.get() and 0xff
+                        byte1 = src.getInt() and 0xff
                         if (byte1 < 0xa1 || byte1 > 0xfe) {
                             return CoderResult.malformedForLength(2)
                         }
-                        byte2 = src.get() and 0xff
+                        byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
                             return CoderResult.malformedForLength(3)
                         }
@@ -130,7 +131,7 @@ open class IBM33722 : Charset("x-IBM33722") {
                         return CoderResult.malformedForLength(1)
                     } else {                                     // G1
                         if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                        byte2 = src.get() and 0xff
+                        byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
                             return CoderResult.malformedForLength(2)
                         }

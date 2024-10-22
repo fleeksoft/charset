@@ -80,17 +80,17 @@ val decodedCharBuffer: CharBuffer = Charset.forName("UTF-8").decode(byteArray)
 ```kotlin
 //encoding
 val encoder = Charset.forName("UTF-8").newEncoder()
-val encodedByteBuffer = encoder.encode(CharBuffer.wrap(inputString))
+val encodedByteBuffer = encoder.encode(CharBufferFactory.wrap(inputString))
 
 //decoding
 val decoder = Charset.forName("UTF-8").newDecoder()
-val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBuffer.wrap(encodedBytes))
+val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBufferFactory.wrap(encodedBytes))
 
 
 //decoding with CharArray
 val charArray = CharArray(5)
-val charBuffer: CharBuffer = CharBuffer.wrap(charArray)
-decoder.decode(ByteBuffer.wrap(encodedBytes), charBuffer, true)
+val charBuffer: CharBuffer = CharBufferFactory.wrap(charArray)
+decoder.decode(ByteBufferFactory.wrap(encodedBytes), charBuffer, true)
 ```
 
 ## Contributing

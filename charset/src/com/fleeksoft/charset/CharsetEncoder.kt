@@ -4,7 +4,9 @@ import com.fleeksoft.charset.internal.ArraysSupport
 import com.fleeksoft.charset.internal.WeakReference
 import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.io.ByteBuffer
+import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.io.CoderMalfunctionError
 import kotlin.math.min
 
@@ -182,15 +184,15 @@ abstract class CharsetEncoder protected constructor(
         var dec: CharsetDecoder? = null
         if ((wr == null) || ((wr.get()?.also { dec = it }) == null)) {
             dec = charset().newDecoder()
-            dec!!.onMalformedInput(CodingErrorAction.REPORT)
-            dec!!.onUnmappableCharacter(CodingErrorAction.REPORT)
-            cachedDecoder = WeakReference<CharsetDecoder>(dec!!)
+            dec.onMalformedInput(CodingErrorAction.REPORT)
+            dec.onUnmappableCharacter(CodingErrorAction.REPORT)
+            cachedDecoder = WeakReference<CharsetDecoder>(dec)
         } else {
             dec?.reset()
         }
-        val bb = ByteBuffer.wrap(repl)
-        val cb: CharBuffer = CharBuffer.allocate((bb.remaining() * dec!!.maxCharsPerByte).toInt())
-        val cr = dec!!.decode(bb, cb, true)
+        val bb = ByteBufferFactory.wrap(repl)
+        val cb: CharBuffer = CharBufferFactory.allocate((bb.remaining() * dec!!.maxCharsPerByte).toInt())
+        val cr = dec.decode(bb, cb, true)
         return !cr.isError
     }
 
@@ -636,7 +638,7 @@ abstract class CharsetEncoder protected constructor(
             (inCharBuffer.remaining() * averageBytesPerChar()).toInt(),
             ArraysSupport.SOFT_MAX_ARRAY_LENGTH
         )
-        var out: ByteBuffer = ByteBuffer.allocate(n)
+        var out: ByteBuffer = ByteBufferFactory.allocate(n)
 
         if ((n == 0) && (inCharBuffer.remaining() == 0)) return out
         reset()
@@ -648,7 +650,7 @@ abstract class CharsetEncoder protected constructor(
             if (cr.isOverflow) {
                 // Ensure progress; n might be 0!
                 n = ArraysSupport.newLength(n, min(n + 1, 1024), n + 1)
-                val o: ByteBuffer = ByteBuffer.allocate(n)
+                val o: ByteBuffer = ByteBufferFactory.allocate(n)
                 out.flip()
                 o.put(out)
                 // todo: check if out buffer empty after copying
@@ -710,7 +712,7 @@ abstract class CharsetEncoder protected constructor(
      * If an encoding operation is already in progress
      */
     open fun canEncode(c: Char): Boolean {
-        val cb: CharBuffer = CharBuffer.allocate(1)
+        val cb: CharBuffer = CharBufferFactory.allocate(1)
         cb.put(c)
         cb.flip()
         return canEncode(cb)
@@ -745,7 +747,7 @@ abstract class CharsetEncoder protected constructor(
      * If an encoding operation is already in progress
      */
     open fun canEncode(cs: CharSequence): Boolean {
-        val cb: CharBuffer = if (cs is CharBuffer) cs.duplicate() else CharBuffer.wrap(cs.toString())
+        val cb: CharBuffer = if (cs is CharBuffer) cs.duplicate() else CharBufferFactory.wrap(cs.toString())
         return canEncode(cb)
     }
 

@@ -8,6 +8,7 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.CharsetMapping
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.max
 
@@ -132,13 +133,13 @@ class EUC_TW : Charset("x-EUC-TW") {
             var mark = src.position()
             try {
                 while (src.hasRemaining()) {
-                    var byte1 = src.get() and 0xff
+                    var byte1 = src.getInt() and 0xff
                     if (byte1 == SS2) {            // Codeset 2  G2
                         if (src.remaining() < 3) return CoderResult.UNDERFLOW
-                        val cnsPlane = cnspToIndex[src.get() and 0xff].toInt()
+                        val cnsPlane = cnspToIndex[src.getInt() and 0xff].toInt()
                         if (cnsPlane < 0) return CoderResult.malformedForLength(2)
-                        byte1 = src.get() and 0xff
-                        val byte2 = src.get() and 0xff
+                        byte1 = src.getInt() and 0xff
+                        val byte2 = src.getInt() and 0xff
                         val cc = toUnicode(byte1, byte2, cnsPlane)
                         if (cc == null) {
                             if (!isLegalDB(byte1) || !isLegalDB(byte2)) return CoderResult.malformedForLength(4)
@@ -158,7 +159,7 @@ class EUC_TW : Charset("x-EUC-TW") {
                         mark++
                     } else {                          // Codeset 1  G1
                         if (!src.hasRemaining()) return CoderResult.UNDERFLOW
-                        val byte2 = src.get() and 0xff
+                        val byte2 = src.getInt() and 0xff
                         val cc = toUnicode(byte1, byte2, 0)
                         if (cc == null) {
                             if (!isLegalDB(byte1) || !isLegalDB(byte2)) return CoderResult.malformedForLength(1)

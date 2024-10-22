@@ -14,6 +14,7 @@ import com.fleeksoft.charset.cs.jis.JIS_X_0208
 import com.fleeksoft.charset.cs.jis.JIS_X_0212
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 class IBM29626C : Charset("x-IBM29626C") {
@@ -150,19 +151,19 @@ class IBM29626C : Charset("x-IBM29626C") {
 
             try {
                 while (src.hasRemaining()) {
-                    b1 = src.get() and 0xff
+                    b1 = src.getInt() and 0xff
                     inputSize = 1
                     outputChar = decodeSingle(b1)
                     if (outputChar == CharsetMapping.UNMAPPABLE_DECODING) { // Multibyte char
                         if (b1 == 0x8f) {   // JIS0212
                             if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                            b1 = src.get() and 0xff
-                            b2 = src.get() and 0xff
+                            b1 = src.getInt() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize += 2
                             outputChar = decodeDoubleG3(b1, b2)
                         } else {                     // JIS0201 JIS0208
                             if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                            b2 = src.get() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize++
                             outputChar = decodeDouble(b1, b2)
                         }

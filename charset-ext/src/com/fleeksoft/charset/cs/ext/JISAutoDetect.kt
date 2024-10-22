@@ -10,6 +10,7 @@ import com.fleeksoft.charset.cs.DelegatableDecoder
 import com.fleeksoft.charset.cs.euc.EUC_JP
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import kotlin.math.min
 
 class JISAutoDetect : Charset("x-JISAutoDetect") {
@@ -50,7 +51,7 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
                 // We need to perform double, not float, arithmetic; otherwise
                 // we lose low order bits when src is larger than 2**24.
                 val cbufsiz = (src.limit() * maxCharsPerByte.toDouble()).toInt()
-                val sandbox = CharBuffer.allocate(cbufsiz)
+                val sandbox = CharBufferFactory.allocate(cbufsiz)
 
                 // First try ISO-2022-JP, since there is no ambiguity
                 val cs2022 = forName("ISO-2022-JP")
@@ -73,7 +74,7 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
                 // If EUC decoding fails, must be SJIS
                 if (resEUCJ.isError) return decodeLoop(ddSJIS, src, dst)
                 val srcSJIS: ByteBuffer = src.asReadOnlyBuffer()
-                val sandboxSJIS: CharBuffer = CharBuffer.allocate(cbufsiz)
+                val sandboxSJIS: CharBuffer = CharBufferFactory.allocate(cbufsiz)
                 val resSJIS: CoderResult = ddSJIS.decodeLoop(srcSJIS, sandboxSJIS)
                 // If SJIS decoding fails, must be EUC
                 if (resSJIS.isError) return decodeLoop(ddEUCJ, src, dst)

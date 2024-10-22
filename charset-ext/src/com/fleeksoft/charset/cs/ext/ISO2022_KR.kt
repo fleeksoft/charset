@@ -8,6 +8,7 @@ import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.euc.EUC_KR
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 
 
 class ISO2022_KR : ISO2022("ISO-2022-KR") {
@@ -22,7 +23,6 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                 (cs is ISO2022_KR))
     }
 
-    
 
     override fun newDecoder(): CharsetDecoder {
         return Decoder(this)
@@ -61,23 +61,20 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
             return false
         }
 
-        fun findDesigBuf(`in`: ByteBuffer): Boolean {
-            if (`in`.remaining() >= SOD.size) {
+        fun findDesigBuf(inByteBuffer: ByteBuffer): Boolean {
+            if (inByteBuffer.remaining() >= SOD.size) {
                 var j = 0
-                `in`.mark()
-                while (j < SOD.size && `in`.get() == SOD[j].toInt()) {
+                inByteBuffer.mark()
+                while (j < SOD.size && inByteBuffer.get() == SOD[j]) {
                     j++
                 }
                 if (j == SOD.size) return true
-                `in`.reset()
+                inByteBuffer.reset()
             }
             return false
         }
 
-        fun decodeArrayLoop(
-            src: ByteBuffer,
-            dst: CharBuffer
-        ): CoderResult {
+        fun decodeArrayLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
             val sa = src.array()
             var sp = src.arrayOffset() + src.position()
             val sl = src.arrayOffset() + src.limit()
@@ -181,7 +178,7 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
 
             try {
                 while (src.hasRemaining()) {
-                    b1 = src.get()
+                    b1 = src.getInt()
                     var inputSize = 1
                     when (b1) {
                         ISO_SO -> shiftout = true
@@ -195,12 +192,12 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                             }
 
                             if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                            b1 = src.get()
+                            b1 = src.getInt()
                             when (b1) {
                                 ISO_SS2_7 -> {
                                     if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                                    b2 = src.get()
-                                    b3 = src.get()
+                                    b2 = src.getInt()
+                                    b3 = src.getInt()
                                     if (dst.remaining() < 1) return CoderResult.OVERFLOW
                                     dst.put(
                                         decode(
@@ -214,8 +211,8 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
 
                                 ISO_SS3_7 -> {
                                     if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                                    b2 = src.get()
-                                    b3 = src.get()
+                                    b2 = src.getInt()
+                                    b3 = src.getInt()
                                     if (dst.remaining() < 1) return CoderResult.OVERFLOW
                                     dst.put(
                                         decode(
@@ -237,7 +234,7 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                                 dst.put((b1 and 0xff).toChar())
                             } else {
                                 if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                                b2 = src.get() and 0xff
+                                b2 = src.getInt() and 0xff
                                 dst.put(
                                     decode(
                                         b1.toByte(),

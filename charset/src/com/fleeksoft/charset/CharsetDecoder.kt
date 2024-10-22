@@ -4,6 +4,7 @@ import com.fleeksoft.charset.internal.ArraysSupport
 import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.io.CoderMalfunctionError
 import kotlin.math.min
 
@@ -88,7 +89,7 @@ abstract class CharsetDecoder(
 
     fun decode(inByteBuffer: ByteBuffer): CharBuffer {
         var n: Int = min((inByteBuffer.remaining() * averageCharsPerByte).toInt(), ArraysSupport.SOFT_MAX_ARRAY_LENGTH)
-        var out: CharBuffer = CharBuffer.allocate(n)
+        var out: CharBuffer = CharBufferFactory.allocate(n)
 
         if ((n == 0) && (inByteBuffer.remaining() == 0)) return out
         reset()
@@ -100,7 +101,7 @@ abstract class CharsetDecoder(
             if (cr.isOverflow) {
                 // Ensure progress; n might be 0!
                 n = ArraysSupport.newLength(n, min(n + 1, 1024), n + 1)
-                val o: CharBuffer = CharBuffer.allocate(n)
+                val o: CharBuffer = CharBufferFactory.allocate(n)
                 out.flip()
                 o.put(out)
                 out = o

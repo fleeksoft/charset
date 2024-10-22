@@ -6,7 +6,9 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.io.ByteBuffer
+import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.lang.Character
 
 abstract class ISO2022(csname: String) : Charset(csname) {
@@ -58,8 +60,8 @@ abstract class ISO2022(csname: String) : Charset(csname) {
             val converted: Int
 
             try {
-                val cc = CharBuffer.wrap(convChar)
-                val bb = ByteBuffer.wrap(convByte)
+                val cc = CharBufferFactory.wrap(convChar)
+                val bb = ByteBufferFactory.wrap(convByte)
                 ISOEncoder!!.encode(cc, bb, true)
                 bb.flip()
                 converted = bb.remaining()

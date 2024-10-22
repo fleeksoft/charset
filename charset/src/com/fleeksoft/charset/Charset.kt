@@ -7,6 +7,7 @@ import com.fleeksoft.charset.cs.StandardCharsets
 import com.fleeksoft.charset.cs.ThreadLocalCoders
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.spi.CharsetProviderRegistry
 
 abstract class Charset(val name: String) : Comparable<Charset> {
@@ -28,7 +29,7 @@ abstract class Charset(val name: String) : Comparable<Charset> {
     }
 
     fun encode(str: String): ByteBuffer {
-        return encode(CharBuffer.wrap(str))
+        return encode(CharBufferFactory.wrap(str))
     }
 
     open fun canEncode(): Boolean = true

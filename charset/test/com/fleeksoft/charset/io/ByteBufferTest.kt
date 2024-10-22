@@ -1,4 +1,4 @@
-package com.fleeksoft.charset.io;
+package com.fleeksoft.charset.io
 
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -12,29 +12,29 @@ class ByteBufferTest {
     @BeforeTest
     fun setUp() {
         // Create a HeapByteBuffer with capacity of 10
-        buffer = ByteBuffer.allocate(10)
+        buffer = ByteBufferFactory.allocate(10)
     }
 
 
     @Test
-    fun initTest(){
-        val b1 = ByteBuffer.allocate(10)
+    fun initTest() {
+        val b1 = ByteBufferFactory.allocate(10)
         assertEquals(0, b1.position())
         assertEquals(10, b1.limit())
-        assertEquals(10, b1.capacity)
+        assertEquals(10, b1.capacity())
         b1.flip()
         assertEquals(0, b1.limit())
 
-        val b2 = ByteBuffer.wrap(ByteArray(5), 0, 3)
+        val b2 = ByteBufferFactory.wrap(ByteArray(5), 0, 3)
         assertEquals(0, b2.position())
         assertEquals(3, b2.limit())
-        assertEquals(5, b2.capacity)
+        assertEquals(5, b2.capacity())
     }
 
     @Test
     fun testInitialProperties() {
         // Test initial properties
-        assertEquals(10, buffer.capacity)
+        assertEquals(10, buffer.capacity())
         assertEquals(0, buffer.position())
         assertEquals(10, buffer.limit())
     }
@@ -59,7 +59,7 @@ class ByteBufferTest {
     @Test
     fun testBufferOverflow() {
         // Test buffer overflow exception
-        for (i in 0 until buffer.capacity) {
+        for (i in 0 until buffer.capacity()) {
             buffer.put(i.toByte())
         }
 
@@ -78,7 +78,7 @@ class ByteBufferTest {
         assertEquals(5, b)
 
         // Test buffer underflow exception
-        assertFailsWith<Exception> {
+        assertFailsWith<BufferUnderflowException> {
             buffer.get()
         }
     }

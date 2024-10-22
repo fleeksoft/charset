@@ -59,7 +59,7 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
             var mark: Int = src.position()
             try {
                 while (src.hasRemaining()) {
-                    val b: Byte = src.getByte()
+                    val b: Byte = src.get()
                     if (b >= 0) {
                         if (!dst.hasRemaining()) return CoderResult.OVERFLOW
                         dst.put(Char(b.toUShort()))

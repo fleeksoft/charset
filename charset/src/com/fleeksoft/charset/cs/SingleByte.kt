@@ -8,11 +8,12 @@ import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.min
 
 object SingleByte {
-    private fun withResult(cr: CoderResult, src: Buffer<*>, sp: Int, dst: Buffer<*>, dp: Int): CoderResult {
+    private fun withResult(cr: CoderResult, src: Buffer, sp: Int, dst: Buffer, dp: Int): CoderResult {
         src.position(sp - src.arrayOffset())
         dst.position(dp - dst.arrayOffset())
         return cr
@@ -115,7 +116,7 @@ object SingleByte {
             var mark: Int = src.position()
             try {
                 while (src.hasRemaining()) {
-                    val c = decode(src.get())
+                    val c = decode(src.getInt())
                     if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(1)
                     if (!dst.hasRemaining()) return CoderResult.OVERFLOW
                     dst.put(c)

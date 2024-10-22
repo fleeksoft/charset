@@ -57,7 +57,7 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
             var mark: Int = src.position()
             try {
                 while (src.hasRemaining()) {
-                    val b: Byte = src.getByte()
+                    val b: Byte = src.get()
                     if (!dst.hasRemaining()) return CoderResult.OVERFLOW
                     dst.put((b.toInt() and 0xff).toChar())
                     mark++

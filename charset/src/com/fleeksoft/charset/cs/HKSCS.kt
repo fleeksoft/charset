@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 class HKSCS {
@@ -84,13 +85,13 @@ class HKSCS {
             var mark = src.position()
             try {
                 while (src.hasRemaining()) {
-                    val b1 = src.get() and 0xff
+                    val b1 = src.getInt() and 0xff
                     var inSize = 1
                     var outSize = 1
                     var c = decodeSingle(b1)
                     if (c == CharsetMapping.UNMAPPABLE_DECODING) {
                         if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                        val b2 = src.get() and 0xff
+                        val b2 = src.getInt() and 0xff
                         inSize++
                         if (b2 < b2Min || b2 > b2Max) return CoderResult.unmappableForLength(
                             2

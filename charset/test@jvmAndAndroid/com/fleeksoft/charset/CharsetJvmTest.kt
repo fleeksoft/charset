@@ -1,5 +1,7 @@
 package com.fleeksoft.charset
 
+import com.fleeksoft.charset.io.ByteBufferFactory
+import com.fleeksoft.charset.io.CharBufferFactory
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset
@@ -17,7 +19,7 @@ class CharsetJvmTest {
         println(charset)
 
         val jCodeResult =
-            Charset.forName("euc-kr").newDecoder().decode(ByteBuffer.wrap(eucKrBytes), CharBuffer.wrap(charArray), true)
+            Charset.forName("euc-kr").newDecoder().decode(ByteBufferFactory.wrap(eucKrBytes), CharBufferFactory.wrap(charArray), true)
         println("jCodeResult: $jCodeResult")
 
         charArray.fill('0')
@@ -25,8 +27,8 @@ class CharsetJvmTest {
 
         val codeResult = Charset.forName("euc-kr").newDecoder()
             .decode(
-                ByteBuffer.wrap(eucKrBytes),
-                CharBuffer.wrap(charArray),
+                ByteBufferFactory.wrap(eucKrBytes),
+                CharBufferFactory.wrap(charArray),
                 true
             )
 

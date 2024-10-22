@@ -8,6 +8,7 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 class GB18030 private constructor() : Charset("GB18030") {
@@ -214,7 +215,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                     var byte2 = 0
                     var byte3 = 0
                     var byte4 = 0
-                    byte1 = src.get() and 0xFF
+                    byte1 = src.getInt() and 0xff
                     var inputSize = 1
 
                     if ((byte1 and 0x80.toByte().toInt()) == 0) { // US-ASCII range
@@ -223,7 +224,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                         return CoderResult.malformedForLength(1)
                     } else { // Either 2 or 4 byte sequence follows
                         if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                        byte2 = src.get() and 0xFF
+                        byte2 = src.getInt() and 0xff
                         inputSize = 2
 
                         if (byte2 < 0x30) return CoderResult.malformedForLength(1)
@@ -232,10 +233,10 @@ class GB18030 private constructor() : Charset("GB18030") {
 
                             if (src.remaining() < 2) return CoderResult.UNDERFLOW
 
-                            byte3 = src.get() and 0xFF
+                            byte3 = src.getInt() and 0xff
                             if (byte3 < 0x81 || byte3 > 0xfe) return CoderResult.malformedForLength(3)
 
-                            byte4 = src.get() and 0xFF
+                            byte4 = src.getInt() and 0xff
                             inputSize = 4
 
                             if (byte4 < 0x30 || byte4 > 0x39) return CoderResult.malformedForLength(4)

@@ -10,6 +10,7 @@ import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.min
 
@@ -25,7 +26,7 @@ class UTF_8 : Unicode("UTF-8") {
     companion object {
         val INSTANCE = UTF_8()
 
-        private fun updatePositions(src: Buffer<*>, sp: Int, dst: Buffer<*>, dp: Int) {
+        private fun updatePositions(src: Buffer, sp: Int, dst: Buffer, dp: Int) {
             src.position(sp - src.arrayOffset())
             dst.position(dp - dst.arrayOffset())
         }
@@ -175,24 +176,24 @@ class UTF_8 : Unicode("UTF-8") {
                     when (nb) {
                         1, 2 -> return CoderResult.malformedForLength(1)
                         3 -> {
-                            val b1: Int = src.get()
-                            val b2: Int = src.get() // no need to lookup b3
+                            val b1: Byte = src.get()
+                            val b2: Int = src.getInt() // no need to lookup b3
                             return CoderResult.malformedForLength(
-                                if ((b1 == 0xe0.toByte().toInt() && (b2 and 0xe0) == 0x80) ||
+                                if ((b1 == 0xe0.toByte() && (b2 and 0xe0) == 0x80) ||
                                     isNotContinuation(b2)
                                 ) 1 else 2
                             )
                         }
 
                         4 -> {
-                            val b1 = src.get() and 0xff
-                            val b2 = src.get() and 0xff
+                            val b1 = src.getInt() and 0xff
+                            val b2 = src.getInt() and 0xff
                             if (b1 > 0xf4 ||
                                 (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
                                 (b1 == 0xf4 && (b2 and 0xf0) != 0x80) ||
                                 isNotContinuation(b2)
                             ) return CoderResult.malformedForLength(1)
-                            if (isNotContinuation(src.get())) return CoderResult.malformedForLength(2)
+                            if (isNotContinuation(src.getInt())) return CoderResult.malformedForLength(2)
                             return CoderResult.malformedForLength(3)
                         }
 
@@ -247,14 +248,14 @@ class UTF_8 : Unicode("UTF-8") {
 
 
                 private fun xflow(
-                    src: Buffer<*>, sp: Int, sl: Int,
-                    dst: Buffer<*>, dp: Int, nb: Int
+                    src: Buffer, sp: Int, sl: Int,
+                    dst: Buffer, dp: Int, nb: Int
                 ): CoderResult {
                     updatePositions(src, sp, dst, dp)
                     return if (nb == 0 || sl - sp < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
                 }
 
-                private fun xflow(src: Buffer<*>, mark: Int, nb: Int): CoderResult {
+                private fun xflow(src: Buffer, mark: Int, nb: Int): CoderResult {
                     src.position(mark)
                     return if (nb == 0 || src.remaining() < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
                 }

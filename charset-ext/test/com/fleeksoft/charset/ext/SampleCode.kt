@@ -4,7 +4,9 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.cs.utf.UTF_8
 import com.fleeksoft.charset.decodeToString
 import com.fleeksoft.charset.io.ByteBuffer
+import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.toByteArray
 
 class SampleCode {
@@ -29,14 +31,14 @@ class SampleCode {
 
         // Creating a new Encoder
         val encoder = Charset.forName("UTF-8").newEncoder()
-        val encodedByteBuffer = encoder.encode(CharBuffer.wrap(inputString))
+        val encodedByteBuffer = encoder.encode(CharBufferFactory.wrap(inputString))
 
         // Creating a new Decoder
         val decoder = Charset.forName("UTF-8").newDecoder()
-        val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBuffer.wrap(encodedBytes))
+        val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBufferFactory.wrap(encodedBytes))
 
         val charArray = CharArray(5)
-        val charBuffer: CharBuffer = CharBuffer.wrap(charArray)
-        decoder.decode(ByteBuffer.wrap(encodedBytes), charBuffer, true)
+        val charBuffer: CharBuffer = CharBufferFactory.wrap(charArray)
+        decoder.decode(ByteBufferFactory.wrap(encodedBytes), charBuffer, true)
     }
 }

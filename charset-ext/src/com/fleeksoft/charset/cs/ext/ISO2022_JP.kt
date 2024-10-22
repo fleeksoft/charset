@@ -10,6 +10,7 @@ import com.fleeksoft.charset.cs.jis.JIS_X_0201
 import com.fleeksoft.charset.cs.jis.JIS_X_0208
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 /*
@@ -253,16 +254,16 @@ open class ISO2022_JP : Charset {
             var inputSize = 0
             try {
                 while (src.hasRemaining()) {
-                    b1 = src.get() and 0xff
+                    b1 = src.getInt() and 0xff
                     inputSize = 1
                     if ((b1 and 0x80) != 0) return CoderResult.malformedForLength(inputSize)
                     if (b1 == ESC || b1 == SO || b1 == SI) {
                         if (b1 == ESC) {  // ESC
                             if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                            b2 = src.get() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize++
                             if (b2 == '('.code) {
-                                b3 = src.get() and 0xff
+                                b3 = src.getInt() and 0xff
                                 inputSize++
                                 if (b3 == 'B'.code) {
                                     currentState = ASCII
@@ -274,7 +275,7 @@ open class ISO2022_JP : Charset {
                                     return CoderResult.malformedForLength(inputSize)
                                 }
                             } else if (b2 == '$'.code) {
-                                b3 = src.get() and 0xff
+                                b3 = src.getInt() and 0xff
                                 inputSize++
                                 if (b3 == '@'.code) {
                                     currentState = JISX0208_1978
@@ -282,7 +283,7 @@ open class ISO2022_JP : Charset {
                                     currentState = JISX0208_1983
                                 } else if (b3 == '('.code && dec0212 != null) {
                                     if (!src.hasRemaining()) return CoderResult.UNDERFLOW
-                                    b4 = src.get() and 0xff
+                                    b4 = src.getInt() and 0xff
                                     inputSize++
                                     if (b4 == 'D'.code) {
                                         currentState = JISX0212_1990
@@ -316,7 +317,7 @@ open class ISO2022_JP : Charset {
 
                         JISX0208_1978, JISX0208_1983 -> {
                             if (!src.hasRemaining()) return CoderResult.UNDERFLOW
-                            b2 = src.get() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize++
                             c = dec0208.decodeDouble(b1, b2)
                             if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)
@@ -325,7 +326,7 @@ open class ISO2022_JP : Charset {
 
                         JISX0212_1990 -> {
                             if (!src.hasRemaining()) return CoderResult.UNDERFLOW
-                            b2 = src.get() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize++
                             c = dec0212!!.decodeDouble(b1, b2)
                             if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)

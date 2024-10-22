@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 
 
 open class IBM964 : Charset("x-IBM964") {
@@ -102,19 +103,19 @@ open class IBM964 : Charset("x-IBM964") {
                     val byte2: Int
                     var inputSize = 1
                     var outputChar = '\uFFFD'
-                    byte1 = src.get() and 0xff
+                    byte1 = src.getInt() and 0xff
 
                     if (byte1 == SS2) {
                         if (src.remaining() < 3) return CoderResult.UNDERFLOW
-                        byte1 = src.get() and 0xff
+                        byte1 = src.getInt() and 0xff
                         inputSize = 2
                         if (byte1 == 0xa2) mappingTableG2 = mappingTableG2a2
                         else if (byte1 == 0xac) mappingTableG2 = mappingTableG2ac
                         else if (byte1 == 0xad) mappingTableG2 = mappingTableG2ad
                         else return CoderResult.malformedForLength(2)
-                        byte1 = src.get() and 0xff
+                        byte1 = src.getInt() and 0xff
                         if (byte1 < 0xa1 || byte1 > 0xfe) return CoderResult.malformedForLength(3)
-                        byte2 = src.get() and 0xff
+                        byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) return CoderResult.malformedForLength(4)
                         inputSize = 4
                         outputChar = mappingTableG2!![((byte1 - 0xa1) * 94) + byte2 - 0xa1]
@@ -126,7 +127,7 @@ open class IBM964 : Charset("x-IBM964") {
                         return CoderResult.malformedForLength(1)
                     } else {                                     // G1
                         if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                        byte2 = src.get() and 0xff
+                        byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
                             return CoderResult.malformedForLength(2)
                         }

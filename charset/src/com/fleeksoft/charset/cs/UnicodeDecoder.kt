@@ -5,6 +5,7 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 internal abstract class UnicodeDecoder(cs: Charset, private var currentByteOrder: Int) : CharsetDecoder(cs, 0.5f, 1.0f) {
@@ -25,8 +26,8 @@ internal abstract class UnicodeDecoder(cs: Charset, private var currentByteOrder
 
         try {
             while (src.remaining() > 1) {
-                val b1: Int = src.get() and 0xff
-                val b2: Int = src.get() and 0xff
+                val b1: Int = src.getInt() and 0xff
+                val b2: Int = src.getInt() and 0xff
 
                 // Byte Order Mark interpretation
                 if (currentByteOrder == NONE) {
@@ -51,7 +52,7 @@ internal abstract class UnicodeDecoder(cs: Charset, private var currentByteOrder
                 if (Character.isSurrogate(c)) {
                     if (Character.isHighSurrogate(c)) {
                         if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                        val c2 = decode(src.get() and 0xff, src.get() and 0xff)
+                        val c2 = decode(src.getInt() and 0xff, src.getInt() and 0xff)
                         if (!Character.isLowSurrogate(c2)) return CoderResult.malformedForLength(4)
                         if (dst.remaining() < 2) return CoderResult.OVERFLOW
                         mark += 4

@@ -8,10 +8,11 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 class ISCII91 : Charset("x-ISCII91") {
-    
+
 
     fun contains(cs: Charset): Boolean {
         return ((cs.name == "US-ASCII")
@@ -180,7 +181,7 @@ class ISCII91 : Charset("x-ISCII91") {
 
             try {
                 while (src.hasRemaining()) {
-                    var index = src.get()
+                    var index = src.getInt()
                     index = if (index < 0) (index + 255) else index
                     val currentChar = directMapTable[index]
 

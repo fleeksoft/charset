@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
 object UTF_32Coder {
@@ -24,15 +25,15 @@ object UTF_32Coder {
 
         private fun getCP(src: ByteBuffer): Int {
             return if (currentBO == BIG)
-                (((src.get() and 0xff) shl 24) or
-                        ((src.get() and 0xff) shl 16) or
-                        ((src.get() and 0xff) shl 8) or
-                        (src.get() and 0xff))
+                (((src.getInt() and 0xff) shl 24) or
+                        ((src.getInt() and 0xff) shl 16) or
+                        ((src.getInt() and 0xff) shl 8) or
+                        (src.getInt() and 0xff))
             else
-                ((src.get() and 0xff) or
-                        ((src.get() and 0xff) shl 8) or
-                        ((src.get() and 0xff) shl 16) or
-                        ((src.get() and 0xff) shl 24))
+                ((src.getInt() and 0xff) or
+                        ((src.getInt() and 0xff) shl 8) or
+                        ((src.getInt() and 0xff) shl 16) or
+                        ((src.getInt() and 0xff) shl 24))
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
@@ -41,10 +42,10 @@ object UTF_32Coder {
             var cp: Int
             try {
                 if (currentBO == NONE) {
-                    cp = ((src.get() and 0xff) shl 24) or
-                            ((src.get() and 0xff) shl 16) or
-                            ((src.get() and 0xff) shl 8) or
-                            (src.get() and 0xff)
+                    cp = ((src.getInt() and 0xff) shl 24) or
+                            ((src.getInt() and 0xff) shl 16) or
+                            ((src.getInt() and 0xff) shl 8) or
+                            (src.getInt() and 0xff)
                     if (cp == BOM_BIG && expectedBO != LITTLE) {
                         currentBO = BIG
                         mark += 4

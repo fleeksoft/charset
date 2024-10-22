@@ -12,7 +12,9 @@ import com.fleeksoft.charset.cs.Unicode
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
+import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.min
 
@@ -120,7 +122,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
             var mark = src.position()
             val limit = src.limit()
             while (mark < limit) {
-                val b1 = src.get()
+                val b1 = src.getInt()
                 if (b1 >= 0) {
                     // 1 byte, 7 bits: 0xxxxxxx
                     if (dst.remaining() < 1) return xflow(src, mark, 1) // overflow
@@ -130,7 +132,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 } else if ((b1 shr 5) == -2 && (b1 and 0x1e) != 0) {
                     // 2 bytes, 11 bits: 110xxxxx 10xxxxxx
                     if (limit - mark < 2 || dst.remaining() < 1) return xflow(src, mark, 2)
-                    val b2 = src.get()
+                    val b2 = src.getInt()
                     if (isNotContinuation(b2)) return malformedForLength(
                         src,
                         mark,
@@ -149,13 +151,13 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                     if (srcRemaining < 3 || dst.remaining() < 1) {
                         if (srcRemaining > 1 && isMalformed3_2(
                                 b1,
-                                src.get()
+                                src.getInt()
                             )
                         ) return malformedForLength(src, mark, 1)
                         return xflow(src, mark, 3)
                     }
-                    val b2 = src.get()
-                    val b3 = src.get()
+                    val b2 = src.getInt()
+                    val b3 = src.getInt()
                     if (isMalformed3(
                             b1,
                             b2,
@@ -275,23 +277,23 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                     1, 2 -> return CoderResult.malformedForLength(1)
                     3 -> {
                         val b1 = src.get()
-                        val b2 = src.get() // no need to lookup b3
+                        val b2 = src.getInt() // no need to lookup b3
                         return CoderResult.malformedForLength(
-                            if ((b1 == 0xe0.toByte().toInt() && (b2 and 0xe0) == 0x80) ||
+                            if ((b1 == 0xe0.toByte() && (b2 and 0xe0) == 0x80) ||
                                 isNotContinuation(b2)
                             ) 1 else 2
                         )
                     }
 
                     4 -> {
-                        val b1 = src.get() and 0xff
-                        val b2 = src.get() and 0xff
+                        val b1 = src.getInt() and 0xff
+                        val b2 = src.getInt() and 0xff
                         if (b1 > 0xf4 ||
                             (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
                             (b1 == 0xf4 && (b2 and 0xf0) != 0x80) ||
                             isNotContinuation(b2)
                         ) return CoderResult.malformedForLength(1)
-                        if (isNotContinuation(src.get())) return CoderResult.malformedForLength(2)
+                        if (isNotContinuation(src.getInt())) return CoderResult.malformedForLength(2)
                         return CoderResult.malformedForLength(3)
                     }
 
@@ -345,21 +347,21 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
 
 
             private fun xflow(
-                src: Buffer<*>, sp: Int, sl: Int,
-                dst: Buffer<*>, dp: Int, nb: Int
+                src: Buffer, sp: Int, sl: Int,
+                dst: Buffer, dp: Int, nb: Int
             ): CoderResult {
                 updatePositions(src, sp, dst, dp)
                 return if (nb == 0 || sl - sp < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
             }
 
-            private fun xflow(src: Buffer<*>, mark: Int, nb: Int): CoderResult {
+            private fun xflow(src: Buffer, mark: Int, nb: Int): CoderResult {
                 src.position(mark)
                 return if (nb == 0 || src.remaining() < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
             }
 
             private fun getByteBuffer(bb: ByteBuffer?, ba: ByteArray?, sp: Int): ByteBuffer {
                 var bb = bb
-                if (bb == null) bb = ByteBuffer.wrap(ba!!)
+                if (bb == null) bb = ByteBufferFactory.wrap(ba!!)
                 bb.position(sp)
                 return bb
             }
@@ -545,7 +547,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
     companion object {
         val INSTANCE = CESU_8()
 
-        private fun updatePositions(src: Buffer<*>, sp: Int, dst: Buffer<*>, dp: Int) {
+        private fun updatePositions(src: Buffer, sp: Int, dst: Buffer, dp: Int) {
             src.position(sp - src.arrayOffset())
             dst.position(dp - dst.arrayOffset())
         }

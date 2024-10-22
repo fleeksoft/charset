@@ -11,6 +11,7 @@ import com.fleeksoft.charset.cs.jis.JIS_X_0212
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 import kotlin.math.min
 
@@ -115,22 +116,22 @@ class EUC_JP : Charset("EUC-JP") {
 
             try {
                 while (src.hasRemaining()) {
-                    b1 = src.get() and 0xff
+                    b1 = src.getInt() and 0xff
                     inputSize = 1
                     if ((b1 and 0x80) == 0) {
                         outputChar = b1.toChar()
                     } else {                         // Multibyte char
                         if (b1 == 0x8f) {   // JIS0212
                             if (src.remaining() < 2) return CoderResult.UNDERFLOW
-                            b1 = src.get() and 0xff
-                            b2 = src.get() and 0xff
+                            b1 = src.getInt() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize += 2
                             if (dec0212 == null)  // JIS02012 not supported
                                 return CoderResult.unmappableForLength(inputSize)
                             outputChar = dec0212.decodeDouble(b1 - 0x80, b2 - 0x80)
                         } else {                     // JIS0201 JIS0208
                             if (src.remaining() < 1) return CoderResult.UNDERFLOW
-                            b2 = src.get() and 0xff
+                            b2 = src.getInt() and 0xff
                             inputSize++
                             outputChar = decodeDouble(b1, b2)
                         }
