@@ -9,13 +9,13 @@ import com.fleeksoft.charset.cs.jis.JIS_X_0201
 import com.fleeksoft.charset.cs.jis.JIS_X_0208_Solaris
 import com.fleeksoft.charset.cs.jis.JIS_X_0212_Solaris
 
-class EUC_JP_Open : Charset("x-eucJP-Open") {
+class EUC_JP_Open : Charset("x-eucJP-Open", null) {
     companion object {
         val INSTANCE = EUC_JP_Open()
     }
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is JIS_X_0201) || (cs is EUC_JP) || (cs is EUC_JP_Open))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is JIS_X_0201) || (cs is EUC_JP) || (cs is EUC_JP_Open))
     }
 
     override fun newDecoder(): CharsetDecoder {

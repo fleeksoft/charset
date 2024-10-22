@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.cs.Unicode
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
@@ -174,11 +175,11 @@ class UTF_8 : Unicode("UTF-8") {
 
                 private fun malformedN(src: ByteBuffer, nb: Int): CoderResult {
                     when (nb) {
-                        1, 2 -> return CoderResult.malformedForLength(1)
+                        1, 2 -> return CoderResultInternal.malformedForLength(1)
                         3 -> {
                             val b1: Byte = src.get()
                             val b2: Int = src.getInt() // no need to lookup b3
-                            return CoderResult.malformedForLength(
+                            return CoderResultInternal.malformedForLength(
                                 if ((b1 == 0xe0.toByte() && (b2 and 0xe0) == 0x80) ||
                                     isNotContinuation(b2)
                                 ) 1 else 2
@@ -192,9 +193,9 @@ class UTF_8 : Unicode("UTF-8") {
                                 (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
                                 (b1 == 0xf4 && (b2 and 0xf0) != 0x80) ||
                                 isNotContinuation(b2)
-                            ) return CoderResult.malformedForLength(1)
-                            if (isNotContinuation(src.getInt())) return CoderResult.malformedForLength(2)
-                            return CoderResult.malformedForLength(3)
+                            ) return CoderResultInternal.malformedForLength(1)
+                            if (isNotContinuation(src.getInt())) return CoderResultInternal.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(3)
                         }
 
                         else -> {
@@ -234,7 +235,7 @@ class UTF_8 : Unicode("UTF-8") {
                     malformedNB: Int
                 ): CoderResult {
                     updatePositions(src, sp, dst, dp)
-                    return CoderResult.malformedForLength(malformedNB)
+                    return CoderResultInternal.malformedForLength(malformedNB)
                 }
 
                 private fun malformedForLength(
@@ -243,7 +244,7 @@ class UTF_8 : Unicode("UTF-8") {
                     malformedNB: Int
                 ): CoderResult {
                     src.position(mark)
-                    return CoderResult.malformedForLength(malformedNB)
+                    return CoderResultInternal.malformedForLength(malformedNB)
                 }
 
 
@@ -252,12 +253,12 @@ class UTF_8 : Unicode("UTF-8") {
                     dst: Buffer, dp: Int, nb: Int
                 ): CoderResult {
                     updatePositions(src, sp, dst, dp)
-                    return if (nb == 0 || sl - sp < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
+                    return if (nb == 0 || sl - sp < nb) CoderResultInternal.UNDERFLOW else CoderResultInternal.OVERFLOW
                 }
 
                 private fun xflow(src: Buffer, mark: Int, nb: Int): CoderResult {
                     src.position(mark)
-                    return if (nb == 0 || src.remaining() < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
+                    return if (nb == 0 || src.remaining() < nb) CoderResultInternal.UNDERFLOW else CoderResultInternal.OVERFLOW
                 }
             }
         }
@@ -294,7 +295,7 @@ class UTF_8 : Unicode("UTF-8") {
                     return encodeArrayLoopSlow(src, sa, sp, sl, dst, da, dp, dl)
                 } else {
                     updatePositions(src, sp, dst, dp)
-                    return CoderResult.UNDERFLOW
+                    return CoderResultInternal.UNDERFLOW
                 }
             }
 
@@ -339,7 +340,7 @@ class UTF_8 : Unicode("UTF-8") {
                     sp++
                 }
                 updatePositions(src, sp, dst, dp)
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             }
 
             private fun encodeBufferLoop(
@@ -382,7 +383,7 @@ class UTF_8 : Unicode("UTF-8") {
                     mark++
                 }
                 src.position(mark)
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             }
 
             override fun encodeLoop(
@@ -398,12 +399,12 @@ class UTF_8 : Unicode("UTF-8") {
                     dst: ByteBuffer, dp: Int
                 ): CoderResult {
                     updatePositions(src, sp, dst, dp)
-                    return CoderResult.OVERFLOW
+                    return CoderResultInternal.OVERFLOW
                 }
 
                 private fun overflow(src: CharBuffer, mark: Int): CoderResult {
                     src.position(mark)
-                    return CoderResult.OVERFLOW
+                    return CoderResultInternal.OVERFLOW
                 }
             }
         }

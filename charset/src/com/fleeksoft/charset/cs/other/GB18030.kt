@@ -6,64 +6,65 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
-class GB18030 private constructor() : Charset("GB18030") {
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
-                || (cs.name == "GBK")
-                || (cs.name == "ISO-8859-1")
-                || (cs.name == "ISO-8859-2")
-                || (cs.name == "ISO-8859-3")
-                || (cs.name == "ISO-8859-4")
-                || (cs.name == "ISO-8859-5")
-                || (cs.name == "ISO-8859-6")
-                || (cs.name == "ISO-8859-7")
-                || (cs.name == "ISO-8859-8")
-                || (cs.name == "ISO-8859-9")
-                || (cs.name == "ISO-8859-13")
-                || (cs.name == "ISO-8859-15")
-                || (cs.name == "ISO-8859-16")
-                || (cs.name == "UTF-8")
-                || (cs.name == "UTF-16")
-                || (cs.name == "UTF-16LE")
-                || (cs.name == "UTF-16BE")
-                || (cs.name == "windows-1251")
-                || (cs.name == "windows-1252")
-                || (cs.name == "windows-1253")
-                || (cs.name == "windows-1254")
-                || (cs.name == "windows-1255")
-                || (cs.name == "windows-1256")
-                || (cs.name == "windows-1257")
-                || (cs.name == "windows-1258")
-                || (cs.name == "windows-932")
-                || (cs.name == "x-mswin-936")
-                || (cs.name == "x-windows-949")
-                || (cs.name == "x-windows-950")
-                || (cs.name == "windows-31j")
-                || (cs.name == "JIS_X0201")
-                || (cs.name == "JIS_X0208-1990")
-                || (cs.name == "JIS_X0212")
-                || (cs.name == "Shift_JIS")
-                || (cs.name == "GB2312")
-                || (cs.name == "EUC-KR")
-                || (cs.name == "x-EUC-TW")
-                || (cs.name == "EUC-JP")
-                || (cs.name == "euc-jp-linux")
-                || (cs.name == "KOI8-R")
-                || (cs.name == "TIS-620")
-                || (cs.name == "x-ISCII91")
-                || (cs.name == "Big5")
-                || (cs.name == "Big5-HKSCS")
-                || (cs.name == "x-MS950-HKSCS")
-                || (cs.name == "ISO-2022-JP")
-                || (cs.name == "ISO-2022-KR")
-                || (cs.name == "x-ISO-2022-CN-CNS")
-                || (cs.name == "x-ISO-2022-CN-GB")
-                || (cs.name == "x-Johab")
+class GB18030 private constructor() : Charset("GB18030", null) {
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
+                || (cs.name() == "GBK")
+                || (cs.name() == "ISO-8859-1")
+                || (cs.name() == "ISO-8859-2")
+                || (cs.name() == "ISO-8859-3")
+                || (cs.name() == "ISO-8859-4")
+                || (cs.name() == "ISO-8859-5")
+                || (cs.name() == "ISO-8859-6")
+                || (cs.name() == "ISO-8859-7")
+                || (cs.name() == "ISO-8859-8")
+                || (cs.name() == "ISO-8859-9")
+                || (cs.name() == "ISO-8859-13")
+                || (cs.name() == "ISO-8859-15")
+                || (cs.name() == "ISO-8859-16")
+                || (cs.name() == "UTF-8")
+                || (cs.name() == "UTF-16")
+                || (cs.name() == "UTF-16LE")
+                || (cs.name() == "UTF-16BE")
+                || (cs.name() == "windows-1251")
+                || (cs.name() == "windows-1252")
+                || (cs.name() == "windows-1253")
+                || (cs.name() == "windows-1254")
+                || (cs.name() == "windows-1255")
+                || (cs.name() == "windows-1256")
+                || (cs.name() == "windows-1257")
+                || (cs.name() == "windows-1258")
+                || (cs.name() == "windows-932")
+                || (cs.name() == "x-mswin-936")
+                || (cs.name() == "x-windows-949")
+                || (cs.name() == "x-windows-950")
+                || (cs.name() == "windows-31j")
+                || (cs.name() == "JIS_X0201")
+                || (cs.name() == "JIS_X0208-1990")
+                || (cs.name() == "JIS_X0212")
+                || (cs.name() == "Shift_JIS")
+                || (cs.name() == "GB2312")
+                || (cs.name() == "EUC-KR")
+                || (cs.name() == "x-EUC-TW")
+                || (cs.name() == "EUC-JP")
+                || (cs.name() == "euc-jp-linux")
+                || (cs.name() == "KOI8-R")
+                || (cs.name() == "TIS-620")
+                || (cs.name() == "x-ISCII91")
+                || (cs.name() == "Big5")
+                || (cs.name() == "Big5-HKSCS")
+                || (cs.name() == "x-MS950-HKSCS")
+                || (cs.name() == "ISO-2022-JP")
+                || (cs.name() == "ISO-2022-KR")
+                || (cs.name() == "x-ISO-2022-CN-CNS")
+                || (cs.name() == "x-ISO-2022-CN-GB")
+                || (cs.name() == "x-Johab")
                 || (cs is GB18030))
     }
 
@@ -136,33 +137,33 @@ class GB18030 private constructor() : Charset("GB18030") {
                     if ((byte1 and 0x80.toByte().toInt()) == 0) { // US-ASCII range
                         currentState = GB18030_SINGLE_BYTE
                     } else if (byte1 < 0x81 || byte1 > 0xfe) {
-                        return CoderResult.malformedForLength(1)
+                        return CoderResultInternal.malformedForLength(1)
                     } else { // Either 2 or 4 byte sequence follows
-                        if (sl - sp < 2) return CoderResult.UNDERFLOW
+                        if (sl - sp < 2) return CoderResultInternal.UNDERFLOW
                         byte2 = sa[sp + 1].toInt() and 0xFF
                         inputSize = 2
 
-                        if (byte2 < 0x30) return CoderResult.malformedForLength(1)
+                        if (byte2 < 0x30) return CoderResultInternal.malformedForLength(1)
                         else if (byte2 >= 0x30 && byte2 <= 0x39) {
                             currentState = GB18030_FOUR_BYTE
 
-                            if (sl - sp < 4) return CoderResult.UNDERFLOW
+                            if (sl - sp < 4) return CoderResultInternal.UNDERFLOW
 
                             byte3 = sa[sp + 2].toInt() and 0xFF
-                            if (byte3 < 0x81 || byte3 > 0xfe) return CoderResult.malformedForLength(3)
+                            if (byte3 < 0x81 || byte3 > 0xfe) return CoderResultInternal.malformedForLength(3)
 
                             byte4 = sa[sp + 3].toInt() and 0xFF
                             inputSize = 4
 
-                            if (byte4 < 0x30 || byte4 > 0x39) return CoderResult.malformedForLength(4)
+                            if (byte4 < 0x30 || byte4 > 0x39) return CoderResultInternal.malformedForLength(4)
                         } else if (byte2 == 0x7f || byte2 == 0xff ||
                             (byte2 < 0x40)
                         ) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         } else currentState = GB18030_DOUBLE_BYTE
                     }
 
-                    if (dl - dp < 1) return CoderResult.OVERFLOW
+                    if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                     when (currentState) {
                         GB18030_SINGLE_BYTE -> da[dp++] = byte1.toChar()
                         GB18030_DOUBLE_BYTE -> da[dp++] = decodeDouble(byte1, byte2)
@@ -188,18 +189,18 @@ class GB18030 private constructor() : Charset("GB18030") {
                             else if (offset >= 0x830D && offset <= 0x93A8) da[dp++] = (offset + 0x6557).toChar()
                             else if (offset >= 0x93A9 && offset <= 0x99FB) da[dp++] = getChar(offset)
                             else if (offset >= 0x2E248 && offset < 0x12E248) {
-                                if (offset >= 0x12E248) return CoderResult.malformedForLength(4)
+                                if (offset >= 0x12E248) return CoderResultInternal.malformedForLength(4)
                                 offset -= 0x1e248
-                                if (dl - dp < 2) return CoderResult.OVERFLOW
+                                if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                                 // emit high + low surrogate
                                 da[dp++] = ((offset - 0x10000) / 0x400 + 0xD800).toChar()
                                 da[dp++] = ((offset - 0x10000) % 0x400 + 0xDC00).toChar()
-                            } else return CoderResult.malformedForLength(inputSize)
+                            } else return CoderResultInternal.malformedForLength(inputSize)
                         }
                     }
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -221,33 +222,33 @@ class GB18030 private constructor() : Charset("GB18030") {
                     if ((byte1 and 0x80.toByte().toInt()) == 0) { // US-ASCII range
                         currentState = GB18030_SINGLE_BYTE
                     } else if (byte1 < 0x81 || byte1 > 0xfe) {
-                        return CoderResult.malformedForLength(1)
+                        return CoderResultInternal.malformedForLength(1)
                     } else { // Either 2 or 4 byte sequence follows
-                        if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         byte2 = src.getInt() and 0xff
                         inputSize = 2
 
-                        if (byte2 < 0x30) return CoderResult.malformedForLength(1)
+                        if (byte2 < 0x30) return CoderResultInternal.malformedForLength(1)
                         else if (byte2 >= 0x30 && byte2 <= 0x39) {
                             currentState = GB18030_FOUR_BYTE
 
-                            if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
 
                             byte3 = src.getInt() and 0xff
-                            if (byte3 < 0x81 || byte3 > 0xfe) return CoderResult.malformedForLength(3)
+                            if (byte3 < 0x81 || byte3 > 0xfe) return CoderResultInternal.malformedForLength(3)
 
                             byte4 = src.getInt() and 0xff
                             inputSize = 4
 
-                            if (byte4 < 0x30 || byte4 > 0x39) return CoderResult.malformedForLength(4)
+                            if (byte4 < 0x30 || byte4 > 0x39) return CoderResultInternal.malformedForLength(4)
                         } else if (byte2 == 0x7f || byte2 == 0xff ||
                             (byte2 < 0x40)
                         ) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         } else currentState = GB18030_DOUBLE_BYTE
                     }
 
-                    if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                    if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                     when (currentState) {
                         GB18030_SINGLE_BYTE -> dst.put(byte1.toChar())
                         GB18030_DOUBLE_BYTE -> dst.put(decodeDouble(byte1, byte2))
@@ -273,20 +274,20 @@ class GB18030 private constructor() : Charset("GB18030") {
                             else if (offset >= 0x830D && offset <= 0x93A8) dst.put((offset + 0x6557).toChar())
                             else if (offset >= 0x93A9 && offset <= 0x99FB) dst.put(getChar(offset))
                             else if (offset >= 0x2E248 && offset < 0x12E248) {
-                                if (offset >= 0x12E248) return CoderResult.malformedForLength(4)
+                                if (offset >= 0x12E248) return CoderResultInternal.malformedForLength(4)
                                 offset -= 0x1e248
-                                if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                                 // emit high + low surrogate
                                 dst.put(((offset - 0x10000) / 0x400 + 0xD800).toChar())
                                 dst.put(((offset - 0x10000) % 0x400 + 0xDC00).toChar())
                             } else {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                         }
                     }
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -361,7 +362,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                             encoderIndex2!!,
                             c
                         )
-                        if (outByteVal == 0xFFFD) return CoderResult.unmappableForLength(1)
+                        if (outByteVal == 0xFFFD) return CoderResultInternal.unmappableForLength(1)
 
                         hiByte = (outByteVal and 0xFF00) shr 8
                         loByte = (outByteVal and 0xFF)
@@ -389,12 +390,12 @@ class GB18030 private constructor() : Charset("GB18030") {
 
                     when (currentState) {
                         GB18030_SINGLE_BYTE -> {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             da[dp++] = c.code.toByte()
                         }
 
                         GB18030_DOUBLE_BYTE -> {
-                            if (dl - dp < 2) return CoderResult.OVERFLOW
+                            if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                             da[dp++] = hiByte.toByte()
                             da[dp++] = loByte.toByte()
                         }
@@ -405,7 +406,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                             val b3: Byte
                             val b4: Byte
 
-                            if (dl - dp < 4) return CoderResult.OVERFLOW
+                            if (dl - dp < 4) return CoderResultInternal.OVERFLOW
                             // Decompose the condensed key into its 4 byte equivalent
                             b4 = ((condensedKey % 10) + 0x30).toByte()
                             condensedKey /= 10
@@ -423,7 +424,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                     }
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -453,7 +454,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                             encoderIndex2!!,
                             c
                         )
-                        if (outByteVal == 0xFFFD) return CoderResult.unmappableForLength(1)
+                        if (outByteVal == 0xFFFD) return CoderResultInternal.unmappableForLength(1)
 
                         hiByte = (outByteVal and 0xFF00) shr 8
                         loByte = (outByteVal and 0xFF)
@@ -480,10 +481,10 @@ class GB18030 private constructor() : Charset("GB18030") {
                     }
 
                     if (currentState == GB18030_SINGLE_BYTE) {
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put(c.code.toByte())
                     } else if (currentState == GB18030_DOUBLE_BYTE) {
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                         dst.put(hiByte.toByte())
                         dst.put(loByte.toByte())
                     } else { // Four Byte encoding
@@ -492,7 +493,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                         val b3: Byte
                         val b4: Byte
 
-                        if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                         // Decompose the condensed key into its 4 byte equivalent
                         b4 = ((condensedKey % 10) + 0x30).toByte()
                         condensedKey /= 10
@@ -507,7 +508,7 @@ class GB18030 private constructor() : Charset("GB18030") {
                     }
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

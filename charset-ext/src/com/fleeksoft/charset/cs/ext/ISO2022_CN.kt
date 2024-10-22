@@ -7,13 +7,14 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.US_ASCII
 import com.fleeksoft.charset.cs.euc.EUC_CN
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import kotlin.experimental.or
 
-class ISO2022_CN : Charset("ISO-2022-CN") {
+class ISO2022_CN : Charset("ISO-2022-CN", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return ((cs is EUC_CN) // GB2312-80 repertoire
                 || (cs is US_ASCII)
                 || (cs is EUC_TW) // CNS11643 repertoire
@@ -101,24 +102,24 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                         if (b1 == ISO_ESC) {  // ESC
                             currentSODesig = SODesigGB
 
-                            if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
 
                             b2 = src.get()
                             inputSize++
 
-                            if ((b2.toInt() and 0x80.toByte().toInt()) != 0) return CoderResult.malformedForLength(inputSize)
+                            if ((b2.toInt() and 0x80.toByte().toInt()) != 0) return CoderResultInternal.malformedForLength(inputSize)
 
                             if (b2 == 0x24.toByte()) {
-                                if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                                if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
 
                                 b3 = src.get()
                                 inputSize++
 
-                                if ((b3.toInt() and 0x80.toByte().toInt()) != 0) return CoderResult.malformedForLength(inputSize)
+                                if ((b3.toInt() and 0x80.toByte().toInt()) != 0) return CoderResultInternal.malformedForLength(inputSize)
                                 if (b3 == 'A'.code.toByte()) {              // "$A"
                                     currentSODesig = SODesigGB
                                 } else if (b3 == ')'.code.toByte()) {
-                                    if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                                    if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                                     b4 = src.get()
                                     inputSize++
                                     if (b4 == 'A'.code.toByte()) {          // "$)A"
@@ -126,41 +127,41 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                                     } else if (b4 == 'G'.code.toByte()) {   // "$)G"
                                         currentSODesig = SODesigCNS
                                     } else {
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else if (b3 == '*'.code.toByte()) {
-                                    if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                                    if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                                     b4 = src.get()
                                     inputSize++
                                     if (b4 != 'H'.code.toByte()) {         // "$*H"
                                         //SS2Desig -> CNS-P1
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else if (b3 == '+'.code.toByte()) {
-                                    if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                                    if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                                     b4 = src.get()
                                     inputSize++
                                     if (b4 != 'I'.code.toByte()) {          // "$+I"
                                         //SS3Desig -> CNS-P2.
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else if (b2 == ISO_SS2_7 || b2 == ISO_SS3_7) {
-                                if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                                if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                                 b3 = src.get()
                                 b4 = src.get()
                                 inputSize += 2
-                                if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                                 //SS2->CNS-P2, SS3->CNS-P3
                                 c = cnsDecode(b3, b4, b2)
-                                if (c == REPLACE_CHAR) return CoderResult.unmappableForLength(
+                                if (c == REPLACE_CHAR) return CoderResultInternal.unmappableForLength(
                                     inputSize
                                 )
                                 dst.put(c)
                             } else {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                         } else if (b1 == ISO_SO) {
                             shiftOut = true
@@ -168,27 +169,27 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                             shiftOut = false
                         }
                         mark += inputSize
-                        if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         b1 = src.get()
                         inputSize = 1
                     }
 
-                    if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                    if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
 
                     if (!shiftOut) {
                         dst.put((b1.toInt() and 0xff).toChar()) //clear the upper byte
                         mark += inputSize
                     } else {
-                        if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         b2 = src.get()
                         inputSize++
                         c = SODecode(b1, b2, currentSODesig)
-                        if (c == REPLACE_CHAR) return CoderResult.unmappableForLength(inputSize)
+                        if (c == REPLACE_CHAR) return CoderResultInternal.unmappableForLength(inputSize)
                         dst.put(c)
                         mark += inputSize
                     }
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -222,19 +223,19 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                         if (b1 == ISO_ESC) {  // ESC
                             currentSODesig = SODesigGB
 
-                            if (sp + 2 > sl) return CoderResult.UNDERFLOW
+                            if (sp + 2 > sl) return CoderResultInternal.UNDERFLOW
 
                             b2 = sa[sp + 1]
                             inputSize++
 
-                            if ((b2.toInt() and 0x80.toByte().toInt()) != 0) return CoderResult.malformedForLength(inputSize)
+                            if ((b2.toInt() and 0x80.toByte().toInt()) != 0) return CoderResultInternal.malformedForLength(inputSize)
                             if (b2 == 0x24.toByte()) {
-                                if (sp + 3 > sl) return CoderResult.UNDERFLOW
+                                if (sp + 3 > sl) return CoderResultInternal.UNDERFLOW
 
                                 b3 = sa[sp + 2]
                                 inputSize++
 
-                                if ((b3.toInt() and 0x80.toByte().toInt()) != 0) return CoderResult.malformedForLength(inputSize)
+                                if ((b3.toInt() and 0x80.toByte().toInt()) != 0) return CoderResultInternal.malformedForLength(inputSize)
                                 if (b3 == 'A'.code.toByte()) {              // "$A"
                                     /* <ESC>$A is not a legal designator sequence for
                                        ISO2022_CN, it is listed as an escape sequence
@@ -243,7 +244,7 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                                      */
                                     currentSODesig = SODesigGB
                                 } else if (b3 == ')'.code.toByte()) {
-                                    if (sp + 4 > sl) return CoderResult.UNDERFLOW
+                                    if (sp + 4 > sl) return CoderResultInternal.UNDERFLOW
                                     b4 = sa[sp + 3]
                                     inputSize++
 
@@ -252,42 +253,42 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                                     } else if (b4 == 'G'.code.toByte()) {   // "$)G"
                                         currentSODesig = SODesigCNS
                                     } else {
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else if (b3 == '*'.code.toByte()) {
-                                    if (sp + 4 > sl) return CoderResult.UNDERFLOW
+                                    if (sp + 4 > sl) return CoderResultInternal.UNDERFLOW
                                     b4 = sa[sp + 3]
                                     inputSize++
                                     if (b4 != 'H'.code.toByte()) {          // "$*H"
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else if (b3 == '+'.code.toByte()) {
-                                    if (sp + 4 > sl) return CoderResult.UNDERFLOW
+                                    if (sp + 4 > sl) return CoderResultInternal.UNDERFLOW
                                     b4 = sa[sp + 3]
                                     inputSize++
                                     if (b4 != 'I'.code.toByte()) {          // "$+I"
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else if (b2 == ISO_SS2_7 || b2 == ISO_SS3_7) {
                                 if (sp + 4 > sl) {
-                                    return CoderResult.UNDERFLOW
+                                    return CoderResultInternal.UNDERFLOW
                                 }
                                 b3 = sa[sp + 2]
                                 b4 = sa[sp + 3]
                                 if (dl - dp < 1) {
-                                    return CoderResult.OVERFLOW
+                                    return CoderResultInternal.OVERFLOW
                                 }
                                 inputSize += 2
                                 c = cnsDecode(b3, b4, b2)
-                                if (c == REPLACE_CHAR) return CoderResult.unmappableForLength(
+                                if (c == REPLACE_CHAR) return CoderResultInternal.unmappableForLength(
                                     inputSize
                                 )
                                 da[dp++] = c
                             } else {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                         } else if (b1 == ISO_SO) {
                             shiftOut = true
@@ -295,28 +296,28 @@ class ISO2022_CN : Charset("ISO-2022-CN") {
                             shiftOut = false
                         }
                         sp += inputSize
-                        if (sp + 1 > sl) return CoderResult.UNDERFLOW
+                        if (sp + 1 > sl) return CoderResultInternal.UNDERFLOW
                         b1 = sa[sp]
                         inputSize = 1
                     }
 
                     if (dl - dp < 1) {
-                        return CoderResult.OVERFLOW
+                        return CoderResultInternal.OVERFLOW
                     }
 
                     if (!shiftOut) {
                         da[dp++] = (b1.toInt() and 0xff).toChar() //clear the upper byte
                     } else {
-                        if (sp + 2 > sl) return CoderResult.UNDERFLOW
+                        if (sp + 2 > sl) return CoderResultInternal.UNDERFLOW
                         b2 = sa[sp + 1]
                         inputSize++
                         c = SODecode(b1, b2, currentSODesig)
-                        if (c == REPLACE_CHAR) return CoderResult.unmappableForLength(inputSize)
+                        if (c == REPLACE_CHAR) return CoderResultInternal.unmappableForLength(inputSize)
                         da[dp++] = c
                     }
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())

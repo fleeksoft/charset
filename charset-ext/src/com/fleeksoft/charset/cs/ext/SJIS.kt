@@ -5,11 +5,11 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class SJIS : Charset("Shift_JIS") {
+class SJIS : Charset("Shift_JIS", null) {
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is SJIS))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is SJIS))
     }
 
     override fun newDecoder(): CharsetDecoder {

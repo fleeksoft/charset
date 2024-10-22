@@ -5,13 +5,14 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.lang.Character
 
-abstract class ISO2022(csname: String) : Charset(csname) {
+abstract class ISO2022(name: String) : Charset(name, null) {
     abstract override fun newDecoder(): CharsetDecoder
 
     abstract override fun newEncoder(): CharsetEncoder
@@ -157,10 +158,10 @@ abstract class ISO2022(csname: String) : Charset(csname) {
                     } else {
                         outputSize = unicodeToNative(c, outputByte)
                         if (outputSize == 0) {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
-                    if (dl - dp < outputSize) return CoderResult.OVERFLOW
+                    if (dl - dp < outputSize) return CoderResultInternal.OVERFLOW
 
                     for (i in 0..<outputSize) da[dp++] = outputByte[i]
                     sp++
@@ -169,7 +170,7 @@ abstract class ISO2022(csname: String) : Charset(csname) {
                     SS2DesDefined = newSS2DesDefined
                     SS3DesDefined = newSS3DesDefined
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -210,11 +211,11 @@ abstract class ISO2022(csname: String) : Charset(csname) {
                     } else {
                         outputSize = unicodeToNative(inputChar, outputByte)
                         if (outputSize == 0) {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
 
-                    if (dst.remaining() < outputSize) return CoderResult.OVERFLOW
+                    if (dst.remaining() < outputSize) return CoderResultInternal.OVERFLOW
                     for (i in 0..<outputSize) dst.put(outputByte[i])
                     mark++
                     shiftout = newshiftout
@@ -222,7 +223,7 @@ abstract class ISO2022(csname: String) : Charset(csname) {
                     SS2DesDefined = newSS2DesDefined
                     SS3DesDefined = newSS3DesDefined
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

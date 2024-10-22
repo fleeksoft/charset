@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
@@ -87,10 +88,10 @@ object SingleByte {
             var dp: Int = dst.arrayOffset() + dst.position()
             val dl: Int = dst.arrayOffset() + dst.limit()
 
-            var cr: CoderResult = CoderResult.UNDERFLOW
+            var cr: CoderResult = CoderResultInternal.UNDERFLOW
             if ((dl - dp) < (sl - sp)) {
                 sl = sp + (dl - dp)
-                cr = CoderResult.OVERFLOW
+                cr = CoderResultInternal.OVERFLOW
             }
 
             if (isASCIICompatible) {
@@ -102,7 +103,7 @@ object SingleByte {
                 val c = decode(sa[sp].toInt())
                 if (c == CharsetMapping.UNMAPPABLE_DECODING) {
                     return withResult(
-                        CoderResult.unmappableForLength(1),
+                        CoderResultInternal.unmappableForLength(1),
                         src, sp, dst, dp
                     )
                 }
@@ -117,12 +118,12 @@ object SingleByte {
             try {
                 while (src.hasRemaining()) {
                     val c = decode(src.getInt())
-                    if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(1)
-                    if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                    if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(1)
+                    if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                     dst.put(c)
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -138,7 +139,7 @@ object SingleByte {
 
         private var repl = '\uFFFD'
 
-        protected fun implReplaceWith(newReplacement: String) {
+        override fun implReplaceWith(newReplacement: String) {
             repl = newReplacement[0]
         }
 
@@ -219,7 +220,7 @@ object SingleByte {
                         return withResult(sgp!!.unmappableResult(), src, sp, dst, dp)
                     }
                     return withResult(
-                        CoderResult.unmappableForLength(1),
+                        CoderResultInternal.unmappableForLength(1),
                         src, sp, dst, dp
                     )
                 }
@@ -227,7 +228,7 @@ object SingleByte {
                 sp++
             }
             return withResult(
-                if (sp < sl) CoderResult.OVERFLOW else CoderResult.UNDERFLOW,
+                if (sp < sl) CoderResultInternal.OVERFLOW else CoderResultInternal.UNDERFLOW,
                 src, sp, dst, dp
             )
         }
@@ -244,13 +245,13 @@ object SingleByte {
                             if (sgp!!.parse(c, src) < 0) return sgp!!.error()
                             return sgp!!.unmappableResult()
                         }
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     }
-                    if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                    if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                     dst.put(b.toByte())
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

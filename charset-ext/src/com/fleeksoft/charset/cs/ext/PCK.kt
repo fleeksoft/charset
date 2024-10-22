@@ -5,10 +5,10 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class PCK : Charset("x-PCK") {
+class PCK : Charset("x-PCK", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is PCK))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is PCK))
     }
 
     override fun newDecoder(): CharsetDecoder {

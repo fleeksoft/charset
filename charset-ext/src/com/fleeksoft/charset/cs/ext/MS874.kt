@@ -7,11 +7,11 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class MS874 : Charset("x-windows-874") {
+class MS874 : Charset("x-windows-874", null) {
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is MS874))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is MS874))
     }
 
     override fun newDecoder(): CharsetDecoder {

@@ -32,9 +32,9 @@ import com.fleeksoft.charset.cs.CharsetMapping
 import com.fleeksoft.charset.cs.SingleByte
 
 
-class IBM874 private constructor() : Charset("x-IBM874") {
+class IBM874 private constructor() : Charset("x-IBM874", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is IBM874)
     }
 

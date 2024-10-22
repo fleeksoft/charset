@@ -5,6 +5,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
+import com.fleeksoft.charset.Charsets
 
 
 object ThreadLocalCoders {
@@ -12,14 +13,14 @@ object ThreadLocalCoders {
 
     private val decoderCache: Cache = object : Cache(CACHE_SIZE) {
         override fun hasName(ob: Any, name: Any): Boolean {
-            if (name is Charset) return (ob as CharsetDecoder).charset == name
-            if (name is String) return ((ob as CharsetDecoder).charset.name == name)
+            if (name is Charset) return (ob as CharsetDecoder).charset() == name
+            if (name is String) return ((ob as CharsetDecoder).charset().name() == name)
             return false
         }
 
         override fun create(name: Any): Any? {
             if (name is Charset) return name.newDecoder()
-            if (name is String) return Charset.forName(name).newDecoder()
+            if (name is String) return Charsets.forName(name).newDecoder()
             assert(false)
             return null
         }
@@ -34,13 +35,13 @@ object ThreadLocalCoders {
     private val encoderCache: Cache = object : Cache(CACHE_SIZE) {
         override fun hasName(ob: Any, name: Any): Boolean {
             if (name is Charset) return (ob as CharsetEncoder).charset() == name
-            if (name is String) return ((ob as CharsetEncoder).charset().name == name)
+            if (name is String) return ((ob as CharsetEncoder).charset().name() == name)
             return false
         }
 
         override fun create(name: Any): Any? {
             if (name is Charset) return name.newEncoder()
-            if (name is String) return Charset.forName((name as String?).toString()).newEncoder()
+            if (name is String) return Charsets.forName((name as String?).toString()).newEncoder()
             assert(false)
             return null
         }

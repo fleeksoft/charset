@@ -5,15 +5,16 @@ import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import kotlin.math.min
 
 
-class US_ASCII private constructor() : Charset("US-ASCII") {
+class US_ASCII private constructor() : Charset("US-ASCII", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is US_ASCII)
     }
 
@@ -45,11 +46,11 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
             dst.position(dp - doff)
             if (sp < sl) {
                 if (dp >= dl) {
-                    return CoderResult.OVERFLOW
+                    return CoderResultInternal.OVERFLOW
                 }
-                return CoderResult.malformedForLength(1)
+                return CoderResultInternal.malformedForLength(1)
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         fun decodeBufferLoop(
@@ -61,14 +62,14 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
                 while (src.hasRemaining()) {
                     val b: Byte = src.get()
                     if (b >= 0) {
-                        if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                        if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                         dst.put(Char(b.toUShort()))
                         mark++
                         continue
                     }
-                    return CoderResult.malformedForLength(1)
+                    return CoderResultInternal.malformedForLength(1)
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -113,7 +114,7 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
                 while (sp < sl) {
                     val c = sa[sp]
                     if (c.code < 0x80) {
-                        if (dp >= dl) return CoderResult.OVERFLOW
+                        if (dp >= dl) return CoderResultInternal.OVERFLOW
                         da[dp] = c.code.toByte()
                         sp++
                         dp++
@@ -122,7 +123,7 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
                     if (sgp.parse(c, sa, sp, sl) < 0) return sgp.error()
                     return sgp.unmappableResult()
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -135,7 +136,7 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
                 while (src.hasRemaining()) {
                     val c: Char = src.get()
                     if (c.code < 0x80) {
-                        if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                        if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                         dst.put(c.code.toByte())
                         mark++
                         continue
@@ -143,7 +144,7 @@ class US_ASCII private constructor() : Charset("US-ASCII") {
                     if (sgp.parse(c, src) < 0) return sgp.error()
                     return sgp.unmappableResult()
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

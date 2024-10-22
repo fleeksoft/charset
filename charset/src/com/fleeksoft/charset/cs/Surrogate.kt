@@ -2,6 +2,7 @@ package com.fleeksoft.charset.cs
 
 import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character
 
@@ -82,7 +83,7 @@ object Surrogate {
      */
     class Parser {
         private var character = 0 // UCS-4
-        private var error: CoderResult? = CoderResult.UNDERFLOW
+        private var error: CoderResult? = CoderResultInternal.UNDERFLOW
         private var isPair = false
 
         /**
@@ -126,7 +127,7 @@ object Surrogate {
          */
         fun unmappableResult(): CoderResult {
             assert(error == null)
-            return CoderResult.unmappableForLength(if (isPair) 2 else 1)
+            return CoderResultInternal.unmappableForLength(if (isPair) 2 else 1)
         }
 
         /**
@@ -145,7 +146,7 @@ object Surrogate {
         fun parse(c: Char, `in`: CharBuffer): Int {
             if (Character.isHighSurrogate(c)) {
                 if (!`in`.hasRemaining()) {
-                    error = CoderResult.UNDERFLOW
+                    error = CoderResultInternal.UNDERFLOW
                     return -1
                 }
                 val d: Char = `in`.get()
@@ -155,11 +156,11 @@ object Surrogate {
                     error = null
                     return character
                 }
-                error = CoderResult.malformedForLength(1)
+                error = CoderResultInternal.malformedForLength(1)
                 return -1
             }
             if (Character.isLowSurrogate(c)) {
-                error = CoderResult.malformedForLength(1)
+                error = CoderResultInternal.malformedForLength(1)
                 return -1
             }
             character = c.code
@@ -187,7 +188,7 @@ object Surrogate {
             assert(ia[ip] == c)
             if (Character.isHighSurrogate(c)) {
                 if (il - ip < 2) {
-                    error = CoderResult.UNDERFLOW
+                    error = CoderResultInternal.UNDERFLOW
                     return -1
                 }
                 val d = ia[ip + 1]
@@ -197,11 +198,11 @@ object Surrogate {
                     error = null
                     return character
                 }
-                error = CoderResult.malformedForLength(1)
+                error = CoderResultInternal.malformedForLength(1)
                 return -1
             }
             if (Character.isLowSurrogate(c)) {
-                error = CoderResult.malformedForLength(1)
+                error = CoderResultInternal.malformedForLength(1)
                 return -1
             }
             character = c.code
@@ -217,7 +218,7 @@ object Surrogate {
      * pairs.
      */
     class Generator {
-        private var error: CoderResult? = CoderResult.OVERFLOW
+        private var error: CoderResult? = CoderResultInternal.OVERFLOW
 
         /**
          * If the previous generation operation detected an error, return the
@@ -246,11 +247,11 @@ object Surrogate {
             if (Character.isBmpCodePoint(uc)) {
                 val c = uc.toChar()
                 if (Character.isSurrogate(c)) {
-                    error = CoderResult.malformedForLength(len)
+                    error = CoderResultInternal.malformedForLength(len)
                     return -1
                 }
                 if (dst.remaining() < 1) {
-                    error = CoderResult.OVERFLOW
+                    error = CoderResultInternal.OVERFLOW
                     return -1
                 }
                 dst.put(c)
@@ -258,7 +259,7 @@ object Surrogate {
                 return 1
             } else if (Character.isValidCodePoint(uc)) {
                 if (dst.remaining() < 2) {
-                    error = CoderResult.OVERFLOW
+                    error = CoderResultInternal.OVERFLOW
                     return -1
                 }
                 dst.put(Character.highSurrogate(uc))
@@ -266,7 +267,7 @@ object Surrogate {
                 error = null
                 return 2
             } else {
-                error = CoderResult.unmappableForLength(len)
+                error = CoderResultInternal.unmappableForLength(len)
                 return -1
             }
         }
@@ -291,11 +292,11 @@ object Surrogate {
             if (Character.isBmpCodePoint(uc)) {
                 val c = uc.toChar()
                 if (Character.isSurrogate(c)) {
-                    error = CoderResult.malformedForLength(len)
+                    error = CoderResultInternal.malformedForLength(len)
                     return -1
                 }
                 if (dl - dp < 1) {
-                    error = CoderResult.OVERFLOW
+                    error = CoderResultInternal.OVERFLOW
                     return -1
                 }
                 da[dp] = c
@@ -303,7 +304,7 @@ object Surrogate {
                 return 1
             } else if (Character.isValidCodePoint(uc)) {
                 if (dl - dp < 2) {
-                    error = CoderResult.OVERFLOW
+                    error = CoderResultInternal.OVERFLOW
                     return -1
                 }
                 da[dp] = Character.highSurrogate(uc)
@@ -311,7 +312,7 @@ object Surrogate {
                 error = null
                 return 2
             } else {
-                error = CoderResult.unmappableForLength(len)
+                error = CoderResultInternal.unmappableForLength(len)
                 return -1
             }
         }

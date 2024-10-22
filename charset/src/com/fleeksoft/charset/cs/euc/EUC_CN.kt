@@ -5,13 +5,13 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class EUC_CN : Charset("GB2312") {
+class EUC_CN : Charset("GB2312", null) {
     companion object {
         val INSTANCE = EUC_CN()
     }
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is EUC_CN))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is EUC_CN))
     }
 
     override fun newDecoder(): CharsetDecoder {

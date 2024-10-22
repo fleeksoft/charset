@@ -6,9 +6,9 @@ import com.fleeksoft.charset.CharsetEncoder
 
 
 class ISO2022_CN_CNS : ISO2022("x-ISO-2022-CN-CNS") {
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         // overlapping repertoire of EUC_TW, CNS11643
-        return ((cs is EUC_TW) || (cs.name == "US-ASCII") || (cs is ISO2022_CN_CNS))
+        return ((cs is EUC_TW) || (cs.name() == "US-ASCII") || (cs is ISO2022_CN_CNS))
     }
 
     

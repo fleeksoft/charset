@@ -5,7 +5,11 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class EUC_KR() : Charset("EUC-KR") {
+class EUC_KR() : Charset("EUC-KR", null) {
+
+    override fun contains(cs: Charset): Boolean {
+        return (cs.name() == "US-ASCII") || (cs is EUC_KR)
+    }
 
     override fun newDecoder(): CharsetDecoder = DoubleByte.Decoder(this, DecodeHolder.b2c, DecodeHolder.b2cSB, 0xa1, 0xfe, true)
     override fun newEncoder(): CharsetEncoder = DoubleByte.Encoder(this, EncodeHolder.c2b, EncodeHolder.c2bIndex, true)
@@ -15,7 +19,7 @@ class EUC_KR() : Charset("EUC-KR") {
         val INSTANCE = EUC_KR()
 
         internal object DecodeHolder {
-            val b2cSBStr = "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007" +
+            const val b2cSBStr = "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007" +
                     "\b\t\n\u000B\u000c\r\u000E\u000F" +
                     "\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017" +
                     "\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F" +

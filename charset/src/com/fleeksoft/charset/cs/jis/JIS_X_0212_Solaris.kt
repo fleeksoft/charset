@@ -5,12 +5,12 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class JIS_X_0212_Solaris : Charset("x-JIS0212_Solaris") {
+class JIS_X_0212_Solaris : Charset("x-JIS0212_Solaris", null) {
     companion object {
         val INSTANCE = JIS_X_0212_Solaris()
     }
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is JIS_X_0212_Solaris)
     }
 

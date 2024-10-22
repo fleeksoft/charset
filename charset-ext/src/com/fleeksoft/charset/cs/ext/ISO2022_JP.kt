@@ -4,10 +4,11 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
-import com.fleeksoft.charset.CodingErrorAction
+import com.fleeksoft.charset.CodingErrorActionValue
 import com.fleeksoft.charset.cs.*
 import com.fleeksoft.charset.cs.jis.JIS_X_0201
 import com.fleeksoft.charset.cs.jis.JIS_X_0208
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
@@ -94,10 +95,10 @@ import com.fleeksoft.charset.lang.Character
  */
 open class ISO2022_JP : Charset {
 
-    constructor(name: String) : super(name)
-    constructor() : super("ISO-2022-JP")
+    constructor(name: String) : super(name, null)
+    constructor() : super("ISO-2022-JP", null)
 
-    open fun contains(cs: Charset): Boolean {
+    open override fun contains(cs: Charset): Boolean {
         return ((cs is JIS_X_0201)
                 || (cs is US_ASCII)
                 || (cs is JIS_X_0208)
@@ -156,11 +157,11 @@ open class ISO2022_JP : Charset {
                     b1 = sa[sp].toInt() and 0xff
                     inputSize = 1
                     if ((b1 and 0x80) != 0) {
-                        return CoderResult.malformedForLength(inputSize)
+                        return CoderResultInternal.malformedForLength(inputSize)
                     }
                     if (b1 == ESC || b1 == SO || b1 == SI) {
                         if (b1 == ESC) {
-                            if (sp + inputSize + 2 > sl) return CoderResult.UNDERFLOW
+                            if (sp + inputSize + 2 > sl) return CoderResultInternal.UNDERFLOW
                             b2 = sa[sp + inputSize++].toInt() and 0xff
                             if (b2 == '('.code) {
                                 b3 = sa[sp + inputSize++].toInt() and 0xff
@@ -171,7 +172,7 @@ open class ISO2022_JP : Charset {
                                 } else if (b3 == 'I'.code) {
                                     currentState = JISX0201_1976_KANA
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else if (b2 == '$'.code) {
                                 b3 = sa[sp + inputSize++].toInt() and 0xff
@@ -180,18 +181,18 @@ open class ISO2022_JP : Charset {
                                 } else if (b3 == 'B'.code) {
                                     currentState = JISX0208_1983
                                 } else if (b3 == '('.code && dec0212 != null) {
-                                    if (sp + inputSize + 1 > sl) return CoderResult.UNDERFLOW
+                                    if (sp + inputSize + 1 > sl) return CoderResultInternal.UNDERFLOW
                                     b4 = sa[sp + inputSize++].toInt() and 0xff
                                     if (b4 == 'D'.code) {
                                         currentState = JISX0212_1990
                                     } else {
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                         } else if (b1 == SO) {
                             previousState = currentState
@@ -202,7 +203,7 @@ open class ISO2022_JP : Charset {
                         sp += inputSize
                         continue
                     }
-                    if (dp + 1 > dl) return CoderResult.OVERFLOW
+                    if (dp + 1 > dl) return CoderResultInternal.OVERFLOW
 
                     when (currentState) {
                         ASCII -> da[dp++] = (b1 and 0xff).toChar()
@@ -213,31 +214,31 @@ open class ISO2022_JP : Charset {
                         }
 
                         JISX0208_1978, JISX0208_1983 -> {
-                            if (sp + inputSize + 1 > sl) return CoderResult.UNDERFLOW
+                            if (sp + inputSize + 1 > sl) return CoderResultInternal.UNDERFLOW
                             b2 = sa[sp + inputSize++].toInt() and 0xff
                             c = dec0208.decodeDouble(b1, b2)
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(inputSize)
                             da[dp++] = c
                         }
 
                         JISX0212_1990 -> {
-                            if (sp + inputSize + 1 > sl) return CoderResult.UNDERFLOW
+                            if (sp + inputSize + 1 > sl) return CoderResultInternal.UNDERFLOW
                             b2 = sa[sp + inputSize++].toInt() and 0xff
                             c = dec0212!!.decodeDouble(b1, b2)
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(inputSize)
                             da[dp++] = c
                         }
 
                         JISX0201_1976_KANA, SHIFTOUT -> {
                             if (b1 > 0x5f) {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                             da[dp++] = (b1 + 0xff40).toChar()
                         }
                     }
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -256,10 +257,10 @@ open class ISO2022_JP : Charset {
                 while (src.hasRemaining()) {
                     b1 = src.getInt() and 0xff
                     inputSize = 1
-                    if ((b1 and 0x80) != 0) return CoderResult.malformedForLength(inputSize)
+                    if ((b1 and 0x80) != 0) return CoderResultInternal.malformedForLength(inputSize)
                     if (b1 == ESC || b1 == SO || b1 == SI) {
                         if (b1 == ESC) {  // ESC
-                            if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                             b2 = src.getInt() and 0xff
                             inputSize++
                             if (b2 == '('.code) {
@@ -272,7 +273,7 @@ open class ISO2022_JP : Charset {
                                 } else if (b3 == 'I'.code) {
                                     currentState = JISX0201_1976_KANA
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else if (b2 == '$'.code) {
                                 b3 = src.getInt() and 0xff
@@ -282,19 +283,19 @@ open class ISO2022_JP : Charset {
                                 } else if (b3 == 'B'.code) {
                                     currentState = JISX0208_1983
                                 } else if (b3 == '('.code && dec0212 != null) {
-                                    if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                                    if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                                     b4 = src.getInt() and 0xff
                                     inputSize++
                                     if (b4 == 'D'.code) {
                                         currentState = JISX0212_1990
                                     } else {
-                                        return CoderResult.malformedForLength(inputSize)
+                                        return CoderResultInternal.malformedForLength(inputSize)
                                     }
                                 } else {
-                                    return CoderResult.malformedForLength(inputSize)
+                                    return CoderResultInternal.malformedForLength(inputSize)
                                 }
                             } else {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                         } else if (b1 == SO) {
                             previousState = currentState
@@ -305,7 +306,7 @@ open class ISO2022_JP : Charset {
                         mark += inputSize
                         continue
                     }
-                    if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                    if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
 
                     when (currentState) {
                         ASCII -> dst.put((b1 and 0xff).toChar())
@@ -316,33 +317,33 @@ open class ISO2022_JP : Charset {
                         }
 
                         JISX0208_1978, JISX0208_1983 -> {
-                            if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                            if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                             b2 = src.getInt() and 0xff
                             inputSize++
                             c = dec0208.decodeDouble(b1, b2)
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(inputSize)
                             dst.put(c)
                         }
 
                         JISX0212_1990 -> {
-                            if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                            if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                             b2 = src.getInt() and 0xff
                             inputSize++
                             c = dec0212!!.decodeDouble(b1, b2)
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(inputSize)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(inputSize)
                             dst.put(c)
                         }
 
                         JISX0201_1976_KANA, SHIFTOUT -> {
                             if (b1 > 0x5f) {
-                                return CoderResult.malformedForLength(inputSize)
+                                return CoderResultInternal.malformedForLength(inputSize)
                             }
                             dst.put((b1 + 0xff40).toChar())
                         }
                     }
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -393,13 +394,13 @@ open class ISO2022_JP : Charset {
 
         override fun implFlush(out: ByteBuffer): CoderResult {
             if (currentMode != ASCII) {
-                if (out.remaining() < 3) return CoderResult.OVERFLOW
+                if (out.remaining() < 3) return CoderResultInternal.OVERFLOW
                 out.put(0x1b.toByte())
                 out.put(0x28.toByte())
                 out.put(0x42.toByte())
                 currentMode = ASCII
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         override fun canEncode(c: Char): Boolean {
@@ -430,69 +431,69 @@ open class ISO2022_JP : Charset {
                     val c = sa[sp]
                     if (c <= '\u007F') {
                         if (currentMode != ASCII) {
-                            if (dl - dp < 3) return CoderResult.OVERFLOW
+                            if (dl - dp < 3) return CoderResultInternal.OVERFLOW
                             da[dp++] = 0x1b.toByte()
                             da[dp++] = 0x28.toByte()
                             da[dp++] = 0x42.toByte()
                             currentMode = ASCII
                         }
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = c.code.toByte()
                     } else if (c.code >= 0xff61 && c.code <= 0xff9f && doSBKANA) {
                         //a single byte kana
                         if (currentMode != JISX0201_1976_KANA) {
-                            if (dl - dp < 3) return CoderResult.OVERFLOW
+                            if (dl - dp < 3) return CoderResultInternal.OVERFLOW
                             da[dp++] = 0x1b.toByte()
                             da[dp++] = 0x28.toByte()
                             da[dp++] = 0x49.toByte()
                             currentMode = JISX0201_1976_KANA
                         }
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = (c.code - 0xff40).toByte()
                     } else if (c == '\u00A5' || c == '\u203E') {
                         //backslash or tilde
                         if (currentMode != JISX0201_1976) {
-                            if (dl - dp < 3) return CoderResult.OVERFLOW
+                            if (dl - dp < 3) return CoderResultInternal.OVERFLOW
                             da[dp++] = 0x1b.toByte()
                             da[dp++] = 0x28.toByte()
                             da[dp++] = 0x4a.toByte()
                             currentMode = JISX0201_1976
                         }
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = if (c == '\u00A5') 0x5C.toByte() else 0x7e.toByte()
                     } else {
                         var index: Int = enc0208.encodeChar(c)
                         if (index != CharsetMapping.UNMAPPABLE_ENCODING) {
                             if (currentMode != JISX0208_1983) {
-                                if (dl - dp < 3) return CoderResult.OVERFLOW
+                                if (dl - dp < 3) return CoderResultInternal.OVERFLOW
                                 da[dp++] = 0x1b.toByte()
                                 da[dp++] = 0x24.toByte()
                                 da[dp++] = 0x42.toByte()
                                 currentMode = JISX0208_1983
                             }
-                            if (dl - dp < 2) return CoderResult.OVERFLOW
+                            if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                             da[dp++] = (index shr 8).toByte()
                             da[dp++] = (index and 0xff).toByte()
                         } else if (enc0212 != null &&
                             (enc0212.encodeChar(c).also { index = it }) != CharsetMapping.UNMAPPABLE_ENCODING
                         ) {
                             if (currentMode != JISX0212_1990) {
-                                if (dl - dp < 4) return CoderResult.OVERFLOW
+                                if (dl - dp < 4) return CoderResultInternal.OVERFLOW
                                 da[dp++] = 0x1b.toByte()
                                 da[dp++] = 0x24.toByte()
                                 da[dp++] = 0x28.toByte()
                                 da[dp++] = 0x44.toByte()
                                 currentMode = JISX0212_1990
                             }
-                            if (dl - dp < 2) return CoderResult.OVERFLOW
+                            if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                             da[dp++] = (index shr 8).toByte()
                             da[dp++] = (index and 0xff).toByte()
                         } else {
                             if (Character.isSurrogate(c) && sgp.parse(c, sa, sp, sl) < 0) return sgp.error()
-                            if ((unmappableCharacterAction == CodingErrorAction.REPLACE)
+                            if ((unmappableCharacterAction() == CodingErrorActionValue.REPLACE)
                                 && currentMode != replaceMode
                             ) {
-                                if (dl - dp < 3) return CoderResult.OVERFLOW
+                                if (dl - dp < 3) return CoderResultInternal.OVERFLOW
                                 if (replaceMode == ASCII) {
                                     da[dp++] = 0x1b.toByte()
                                     da[dp++] = 0x28.toByte()
@@ -505,12 +506,12 @@ open class ISO2022_JP : Charset {
                                 currentMode = replaceMode
                             }
                             if (Character.isSurrogate(c)) return sgp.unmappableResult()
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
                     sp++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -525,68 +526,68 @@ open class ISO2022_JP : Charset {
 
                     if (c <= '\u007F') {
                         if (currentMode != ASCII) {
-                            if (dst.remaining() < 3) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 3) return CoderResultInternal.OVERFLOW
                             dst.put(0x1b.toByte())
                             dst.put(0x28.toByte())
                             dst.put(0x42.toByte())
                             currentMode = ASCII
                         }
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put(c.code.toByte())
                     } else if (c.code >= 0xff61 && c.code <= 0xff9f && doSBKANA) {
                         //Is it a single byte kana?
                         if (currentMode != JISX0201_1976_KANA) {
-                            if (dst.remaining() < 3) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 3) return CoderResultInternal.OVERFLOW
                             dst.put(0x1b.toByte())
                             dst.put(0x28.toByte())
                             dst.put(0x49.toByte())
                             currentMode = JISX0201_1976_KANA
                         }
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put((c.code - 0xff40).toByte())
                     } else if (c == '\u00a5' || c == '\u203E') {
                         if (currentMode != JISX0201_1976) {
-                            if (dst.remaining() < 3) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 3) return CoderResultInternal.OVERFLOW
                             dst.put(0x1b.toByte())
                             dst.put(0x28.toByte())
                             dst.put(0x4a.toByte())
                             currentMode = JISX0201_1976
                         }
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put(if (c == '\u00A5') 0x5C.toByte() else 0x7e.toByte())
                     } else {
                         var index: Int = enc0208.encodeChar(c)
                         if (index != CharsetMapping.UNMAPPABLE_ENCODING) {
                             if (currentMode != JISX0208_1983) {
-                                if (dst.remaining() < 3) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 3) return CoderResultInternal.OVERFLOW
                                 dst.put(0x1b.toByte())
                                 dst.put(0x24.toByte())
                                 dst.put(0x42.toByte())
                                 currentMode = JISX0208_1983
                             }
-                            if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                             dst.put((index shr 8).toByte())
                             dst.put((index and 0xff).toByte())
                         } else if (enc0212 != null &&
                             (enc0212.encodeChar(c).also { index = it }) != CharsetMapping.UNMAPPABLE_ENCODING
                         ) {
                             if (currentMode != JISX0212_1990) {
-                                if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                                 dst.put(0x1b.toByte())
                                 dst.put(0x24.toByte())
                                 dst.put(0x28.toByte())
                                 dst.put(0x44.toByte())
                                 currentMode = JISX0212_1990
                             }
-                            if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                             dst.put((index shr 8).toByte())
                             dst.put((index and 0xff).toByte())
                         } else {
                             if (Character.isSurrogate(c) && sgp.parse(c, src) < 0) return sgp.error()
-                            if (unmappableCharacterAction == CodingErrorAction.REPLACE
+                            if (unmappableCharacterAction() == CodingErrorActionValue.REPLACE
                                 && currentMode != replaceMode
                             ) {
-                                if (dst.remaining() < 3) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 3) return CoderResultInternal.OVERFLOW
                                 if (replaceMode == ASCII) {
                                     dst.put(0x1b.toByte())
                                     dst.put(0x28.toByte())
@@ -599,12 +600,12 @@ open class ISO2022_JP : Charset {
                                 currentMode = replaceMode
                             }
                             if (Character.isSurrogate(c)) return sgp.unmappableResult()
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

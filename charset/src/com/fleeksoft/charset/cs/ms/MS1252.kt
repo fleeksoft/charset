@@ -5,10 +5,10 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.SingleByte
 
-class MS1252 private constructor() : Charset("windows-1252") {
+class MS1252 private constructor() : Charset("windows-1252", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is MS1252))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is MS1252))
     }
 
     override fun newDecoder(): CharsetDecoder {

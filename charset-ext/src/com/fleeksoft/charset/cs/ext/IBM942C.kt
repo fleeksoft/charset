@@ -5,11 +5,11 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class IBM942C : Charset("x-IBM942C") {
+class IBM942C : Charset("x-IBM942C", null) {
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is IBM942C))
     }
 

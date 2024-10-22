@@ -50,7 +50,7 @@ You can initialize a `Charset` in two ways:
 val charset: Charset = UTF_8.INSTANCE // This INSTANCE variable is available only for Standard Charsets
 
 // Or, by using forName method
-val charset: Charset = Charset.forName("UTF-8") // charset name can be any case it will be normalized in lower case and remove `-` and `_`
+val charset: Charset = Charsets.forName("UTF-8") // charset name can be any case it will be normalized in lower case and remove `-` and `_`
 ```
 
 ### Encoding & Decoding with Extension Functions
@@ -70,20 +70,20 @@ println("Decoded String: $decodedString")
 ### Encoding & Decoding with Default Instance
 ```kotlin
 //encode
-val byteArray: ByteBuffer = Charset.forName("UTF-8").encode("Hello, World!")
+val byteArray: ByteBuffer = Charsets.forName("UTF-8").encode("Hello, World!")
 
 //decode
-val decodedCharBuffer: CharBuffer = Charset.forName("UTF-8").decode(byteArray)
+val decodedCharBuffer: CharBuffer = Charsets.forName("UTF-8").decode(byteArray)
 ```
 
 ### Encoding & Decoding by Creating New Encoder and Decoder Instance
 ```kotlin
 //encoding
-val encoder = Charset.forName("UTF-8").newEncoder()
+val encoder = Charsets.forName("UTF-8").newEncoder()
 val encodedByteBuffer = encoder.encode(CharBufferFactory.wrap(inputString))
 
 //decoding
-val decoder = Charset.forName("UTF-8").newDecoder()
+val decoder = Charsets.forName("UTF-8").newDecoder()
 val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBufferFactory.wrap(encodedBytes))
 
 

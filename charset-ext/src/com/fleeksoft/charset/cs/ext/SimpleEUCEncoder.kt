@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character
@@ -77,10 +78,9 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     return sgp.unmappableResult()
                 }
 
-                if (inputChar >= '\uFFFE') return CoderResult.unmappableForLength(1)
+                if (inputChar >= '\uFFFE') return CoderResultInternal.unmappableForLength(1)
 
                 val theChars: String
-                var aChar: Char
 
                 // We have a valid character, get the bytes for it
                 index = index1!![((inputChar.code and mask1) shr shift)] + (inputChar.code and mask2)
@@ -97,7 +97,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     theChars = index2c!!
                 }
 
-                aChar = theChars[2 * index]
+                var aChar: Char = theChars[2 * index]
                 outputByte[0] = ((aChar.code and 0xff00) shr 8).toByte()
                 outputByte[1] = (aChar.code and 0x00ff).toByte()
                 aChar = theChars[2 * index + 1]
@@ -114,7 +114,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                 }
 
                 if (allZeroes && inputChar != '\u0000') {
-                    return CoderResult.unmappableForLength(1)
+                    return CoderResultInternal.unmappableForLength(1)
                 }
 
                 var oindex = 0
@@ -125,7 +125,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     spaceNeeded--
                 }
 
-                if (dp + spaceNeeded > dl) return CoderResult.OVERFLOW
+                if (dp + spaceNeeded > dl) return CoderResultInternal.OVERFLOW
 
                 i = outputByte.size - spaceNeeded
                 while (i < outputByte.size) {
@@ -134,7 +134,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                 }
                 sp++
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         } finally {
             src.position(sp - src.arrayOffset())
             dst.position(dp - dst.arrayOffset())
@@ -158,10 +158,9 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     return sgp.unmappableResult()
                 }
 
-                if (inputChar >= '\uFFFE') return CoderResult.unmappableForLength(1)
+                if (inputChar >= '\uFFFE') return CoderResultInternal.unmappableForLength(1)
 
                 val theChars: String
-                var aChar: Char
 
                 // We have a valid character, get the bytes for it
                 index = index1!![((inputChar.code and mask1) shr shift)] + (inputChar.code and mask2)
@@ -178,7 +177,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     theChars = index2c!!
                 }
 
-                aChar = theChars[2 * index]
+                var aChar: Char = theChars[2 * index]
                 outputByte[0] = ((aChar.code and 0xff00) shr 8).toByte()
                 outputByte[1] = (aChar.code and 0x00ff).toByte()
                 aChar = theChars[2 * index + 1]
@@ -194,7 +193,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     i++
                 }
                 if (allZeroes && inputChar != '\u0000') {
-                    return CoderResult.unmappableForLength(1)
+                    return CoderResultInternal.unmappableForLength(1)
                 }
 
                 var oindex = 0
@@ -204,7 +203,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                     if (outputByte[oindex++].toInt() != 0x00) break
                     spaceNeeded--
                 }
-                if (dst.remaining() < spaceNeeded) return CoderResult.OVERFLOW
+                if (dst.remaining() < spaceNeeded) return CoderResultInternal.OVERFLOW
 
                 i = outputByte.size - spaceNeeded
                 while (i < outputByte.size) {
@@ -213,7 +212,7 @@ abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEnco
                 }
                 mark++
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         } finally {
             src.position(mark)
         }

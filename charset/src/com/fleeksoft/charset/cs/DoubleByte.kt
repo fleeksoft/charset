@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
@@ -27,7 +28,7 @@ object DoubleByte {
 
         // for SimpleEUC override
         protected open fun crMalformedOrUnderFlow(b: Int): CoderResult {
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         protected open fun crMalformedOrUnmappable(b1: Int, b2: Int): CoderResult {
@@ -35,9 +36,9 @@ object DoubleByte {
                 b2c[b2] != B2C_UNMAPPABLE ||  // isLeadingByte(b2)
                 decodeSingle(b2) != CharsetMapping.UNMAPPABLE_DECODING
             ) {  // isSingle(b2)
-                return CoderResult.malformedForLength(1)
+                return CoderResultInternal.malformedForLength(1)
             }
-            return CoderResult.unmappableForLength(2)
+            return CoderResultInternal.unmappableForLength(2)
         }
 
         constructor(
@@ -82,9 +83,9 @@ object DoubleByte {
                     sp += inSize
                 }
                 return if (sp >= sl)
-                    CoderResult.UNDERFLOW
+                    CoderResultInternal.UNDERFLOW
                 else
-                    CoderResult.OVERFLOW
+                    CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - soff)
                 dst.position(dp - doff)
@@ -113,9 +114,9 @@ object DoubleByte {
                     mark += inSize
                 }
                 return if (src.hasRemaining())
-                    CoderResult.OVERFLOW
+                    CoderResultInternal.UNDERFLOW
                 else
-                    CoderResult.UNDERFLOW
+                    CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -130,7 +131,7 @@ object DoubleByte {
             var sp = sp
             var dp = 0
             val sl = sp + len
-            val repl: Char = replacement[0]
+            val repl: Char = replacement()[0]
             while (sp < sl) {
                 val b1 = src[sp++].toInt() and 0xff
                 var c = b2cSB!![b1]
@@ -203,32 +204,32 @@ object DoubleByte {
                     val b1 = sa[sp].toInt() and 0xff
                     var inSize = 1
                     if (b1 == SO) {  // Shift out
-                        if (currentState != SBCS) return CoderResult.malformedForLength(1)
+                        if (currentState != SBCS) return CoderResultInternal.malformedForLength(1)
                         else currentState = DBCS
                     } else if (b1 == SI) {
-                        if (currentState != DBCS) return CoderResult.malformedForLength(1)
+                        if (currentState != DBCS) return CoderResultInternal.malformedForLength(1)
                         else currentState = SBCS
                     } else {
                         var c: Char? = null
                         if (currentState == SBCS) {
                             c = b2cSB!![b1]
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(1)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(1)
                         } else {
-                            if (sl - sp < 2) return CoderResult.UNDERFLOW
+                            if (sl - sp < 2) return CoderResultInternal.UNDERFLOW
                             val b2 = sa[sp + 1].toInt() and 0xff
                             if (b2 < b2Min || b2 > b2Max || (b2c!![b1]!![b2 - b2Min].also { c = it }) == CharsetMapping.UNMAPPABLE_DECODING) {
-                                if (!isDoubleByte(b1, b2)) return CoderResult.malformedForLength(2)
-                                return CoderResult.unmappableForLength(2)
+                                if (!isDoubleByte(b1, b2)) return CoderResultInternal.malformedForLength(2)
+                                return CoderResultInternal.unmappableForLength(2)
                             }
                             inSize++
                         }
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.UNDERFLOW
 
                         da[dp++] = c!!
                     }
                     sp += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -242,33 +243,33 @@ object DoubleByte {
                     val b1: Int = src.getInt() and 0xff
                     var inSize = 1
                     if (b1 == SO) {  // Shift out
-                        if (currentState != SBCS) return CoderResult.malformedForLength(1)
+                        if (currentState != SBCS) return CoderResultInternal.malformedForLength(1)
                         else currentState = DBCS
                     } else if (b1 == SI) {
-                        if (currentState != DBCS) return CoderResult.malformedForLength(1)
+                        if (currentState != DBCS) return CoderResultInternal.malformedForLength(1)
                         else currentState = SBCS
                     } else {
                         var c: Char = CharsetMapping.UNMAPPABLE_DECODING
                         if (currentState == SBCS) {
                             c = b2cSB!![b1]
-                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(1)
+                            if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(1)
                         } else {
-                            if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                             val b2: Int = src.getInt() and 0xff
                             if (b2 < b2Min || b2 > b2Max || (b2c!![b1]!![b2 - b2Min].also { c = it }) == CharsetMapping.UNMAPPABLE_DECODING) {
-                                if (!isDoubleByte(b1, b2)) return CoderResult.malformedForLength(2)
-                                return CoderResult.unmappableForLength(2)
+                                if (!isDoubleByte(b1, b2)) return CoderResultInternal.malformedForLength(2)
+                                return CoderResultInternal.unmappableForLength(2)
                             }
                             inSize++
                         }
 
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.UNDERFLOW
 
                         dst.put(c)
                     }
                     mark += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -279,7 +280,7 @@ object DoubleByte {
             var dp = 0
             val sl = sp + len
             currentState = SBCS
-            val repl: Char = replacement[0]
+            val repl: Char = replacement()[0]
             while (sp < sl) {
                 val b1 = src[sp++].toInt() and 0xff
                 if (b1 == SO) {  // Shift out
@@ -337,7 +338,7 @@ object DoubleByte {
     class Decoder_DBCSONLY : Decoder {
         // always returns unmappableForLenth(2) for doublebyte_only
         override fun crMalformedOrUnmappable(b1: Int, b2: Int): CoderResult {
-            return CoderResult.unmappableForLength(2)
+            return CoderResultInternal.unmappableForLength(2)
         }
 
         constructor(
@@ -366,20 +367,20 @@ object DoubleByte {
 
         // No support provided for G2/G3 for SimpleEUC
         override fun crMalformedOrUnderFlow(b: Int): CoderResult {
-            if (b == SS2 || b == SS3) return CoderResult.malformedForLength(1)
-            return CoderResult.UNDERFLOW
+            if (b == SS2 || b == SS3) return CoderResultInternal.malformedForLength(1)
+            return CoderResultInternal.UNDERFLOW
         }
 
         override fun crMalformedOrUnmappable(b1: Int, b2: Int): CoderResult {
-            if (b1 == SS2 || b1 == SS3) return CoderResult.malformedForLength(1)
-            return CoderResult.unmappableForLength(2)
+            if (b1 == SS2 || b1 == SS3) return CoderResultInternal.malformedForLength(1)
+            return CoderResultInternal.unmappableForLength(2)
         }
 
         override fun decode(src: ByteArray, sp: Int, len: Int, dst: CharArray): Int {
             var sp = sp
             var dp = 0
             val sl = sp + len
-            val repl: Char = replacement[0]
+            val repl: Char = replacement()[0]
             while (sp < sl) {
                 val b1 = src[sp++].toInt() and 0xff
                 var c: Char = b2cSB!![b1]
@@ -461,21 +462,21 @@ object DoubleByte {
                             if (sgp().parse(c, sa, sp, sl) < 0) return _sgp!!.error()
                             return _sgp!!.unmappableResult()
                         }
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     }
 
                     if (bb > MAX_SINGLEBYTE) {    // DoubleByte
-                        if (dl - dp < 2) return CoderResult.OVERFLOW
+                        if (dl - dp < 2) return CoderResultInternal.UNDERFLOW
                         da[dp++] = (bb shr 8).toByte()
                         da[dp++] = bb.toByte()
                     } else {                      // SingleByte
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.UNDERFLOW
                         da[dp++] = bb.toByte()
                     }
 
                     sp++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -493,19 +494,19 @@ object DoubleByte {
                             if (sgp().parse(c, src) < 0) return _sgp!!.error()
                             return _sgp!!.unmappableResult()
                         }
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     }
                     if (bb > MAX_SINGLEBYTE) {  // DoubleByte
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 2) return CoderResultInternal.UNDERFLOW
                         dst.put((bb shr 8).toByte())
                         dst.put((bb).toByte())
                     } else {
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         dst.put(bb.toByte())
                     }
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -688,11 +689,11 @@ object DoubleByte {
 
         override fun implFlush(out: ByteBuffer): CoderResult {
             if (currentState == DBCS) {
-                if (out.remaining() < 1) return CoderResult.OVERFLOW
+                if (out.remaining() < 1) return CoderResultInternal.UNDERFLOW
                 out.put(SI)
             }
             implReset()
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         override fun encodeArrayLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
@@ -712,29 +713,29 @@ object DoubleByte {
                             if (sgp().parse(c, sa, sp, sl) < 0) return _sgp!!.error()
                             return _sgp!!.unmappableResult()
                         }
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     }
                     if (bb > MAX_SINGLEBYTE) {  // DoubleByte
                         if (currentState == SBCS) {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.UNDERFLOW
                             currentState = DBCS
                             da[dp++] = SO
                         }
-                        if (dl - dp < 2) return CoderResult.OVERFLOW
+                        if (dl - dp < 2) return CoderResultInternal.UNDERFLOW
                         da[dp++] = (bb shr 8).toByte()
                         da[dp++] = bb.toByte()
                     } else {                    // SingleByte
                         if (currentState == DBCS) {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.UNDERFLOW
                             currentState = SBCS
                             da[dp++] = SI
                         }
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.UNDERFLOW
                         da[dp++] = bb.toByte()
                     }
                     sp++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -752,29 +753,29 @@ object DoubleByte {
                             if (sgp().parse(c, src) < 0) return _sgp!!.error()
                             return _sgp!!.unmappableResult()
                         }
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     }
                     if (bb > MAX_SINGLEBYTE) {  // DoubleByte
                         if (currentState == SBCS) {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.UNDERFLOW
                             currentState = DBCS
                             dst.put(SO)
                         }
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 2) return CoderResultInternal.UNDERFLOW
                         dst.put((bb shr 8).toByte())
                         dst.put((bb).toByte())
                     } else {                  // Single-byte
                         if (currentState == DBCS) {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.UNDERFLOW
                             currentState = SBCS
                             dst.put(SI)
                         }
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         dst.put(bb.toByte())
                     }
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

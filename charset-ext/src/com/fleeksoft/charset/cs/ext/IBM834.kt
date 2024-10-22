@@ -7,8 +7,8 @@ import com.fleeksoft.charset.cs.CharsetMapping
 import com.fleeksoft.charset.cs.DoubleByte
 
 // EBCDIC DBCS-only Korean
-open class IBM834 : Charset("x-IBM834") {
-    fun contains(cs: Charset): Boolean {
+open class IBM834 : Charset("x-IBM834", null) {
+    override fun contains(cs: Charset): Boolean {
         return (cs is IBM834)
     }
 

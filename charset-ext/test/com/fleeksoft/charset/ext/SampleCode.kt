@@ -1,6 +1,7 @@
 package com.fleeksoft.charset.ext
 
 import com.fleeksoft.charset.Charset
+import com.fleeksoft.charset.Charsets
 import com.fleeksoft.charset.cs.utf.UTF_8
 import com.fleeksoft.charset.decodeToString
 import com.fleeksoft.charset.io.ByteBuffer
@@ -14,7 +15,7 @@ class SampleCode {
         val inputString = "Hello, World!"
 
         // Encoding
-        val charset: Charset = UTF_8.INSTANCE // or Charset.forName("utf-8")
+        val charset: Charset = UTF_8.INSTANCE // or Charsets.forName("utf-8")
 
         val encodedBytes: ByteArray = inputString.toByteArray(charset) //ext fun from com.fleeksoft.charset.toByteArray
         println("Encoded Bytes: ${encodedBytes.joinToString()}")
@@ -24,17 +25,17 @@ class SampleCode {
         println("Decoded String: $decodedString")
 
         // Encoding a String to ByteArray
-        val byteArray: ByteBuffer = Charset.forName("UTF-8").encode("Hello, World!")
+        val byteArray: ByteBuffer = Charsets.forName("UTF-8").encode("Hello, World!")
 
         // Decoding ByteArray to String
-        val decodedCharBuffer: CharBuffer = Charset.forName("UTF-8").decode(byteArray)
+        val decodedCharBuffer: CharBuffer = Charsets.forName("UTF-8").decode(byteArray)
 
         // Creating a new Encoder
-        val encoder = Charset.forName("UTF-8").newEncoder()
+        val encoder = Charsets.forName("UTF-8").newEncoder()
         val encodedByteBuffer = encoder.encode(CharBufferFactory.wrap(inputString))
 
         // Creating a new Decoder
-        val decoder = Charset.forName("UTF-8").newDecoder()
+        val decoder = Charsets.forName("UTF-8").newDecoder()
         val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBufferFactory.wrap(encodedBytes))
 
         val charArray = CharArray(5)

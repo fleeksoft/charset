@@ -7,9 +7,9 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class IBM1046 : Charset("x-IBM1046") {
+class IBM1046 : Charset("x-IBM1046", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is IBM1046)
     }
 

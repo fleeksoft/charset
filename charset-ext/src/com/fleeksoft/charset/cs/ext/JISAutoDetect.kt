@@ -5,17 +5,19 @@ import com.fleeksoft.charset.isWindows
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
+import com.fleeksoft.charset.Charsets
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.DelegatableDecoder
 import com.fleeksoft.charset.cs.euc.EUC_JP
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.CharBufferFactory
 import kotlin.math.min
 
-class JISAutoDetect : Charset("x-JISAutoDetect") {
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is SJIS) || (cs is EUC_JP) || (cs is ISO2022_JP) || (cs is JISAutoDetect))
+class JISAutoDetect : Charset("x-JISAutoDetect", null) {
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is SJIS) || (cs is EUC_JP) || (cs is ISO2022_JP) || (cs is JISAutoDetect))
     }
 
     override fun canEncode(): Boolean {
@@ -44,26 +46,26 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
                 copyLeadingASCII(src, dst)
 
                 // All ASCII?
-                if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                 // Overflow only if there is still ascii but no out buffer.
-                if (!dst.hasRemaining() && isPlainASCII(src.get(src.position()))) return CoderResult.OVERFLOW
+                if (!dst.hasRemaining() && isPlainASCII(src.get(src.position()))) return CoderResultInternal.OVERFLOW
 
                 // We need to perform double, not float, arithmetic; otherwise
                 // we lose low order bits when src is larger than 2**24.
-                val cbufsiz = (src.limit() * maxCharsPerByte.toDouble()).toInt()
+                val cbufsiz = (src.limit() * maxCharsPerByte().toDouble()).toInt()
                 val sandbox = CharBufferFactory.allocate(cbufsiz)
 
                 // First try ISO-2022-JP, since there is no ambiguity
-                val cs2022 = forName("ISO-2022-JP")
+                val cs2022 = Charsets.forName("ISO-2022-JP")
                 val dd2022
                         : DelegatableDecoder = cs2022.newDecoder() as DelegatableDecoder
                 val src2022: ByteBuffer = src.asReadOnlyBuffer()
                 val res2022: CoderResult = dd2022.decodeLoop(src2022, sandbox)
-                if (!res2022.isError) return decodeLoop(dd2022, src, dst)
+                if (!res2022.isError()) return decodeLoop(dd2022, src, dst)
 
                 // We must choose between EUC and SJIS
-                val csEUCJ = forName(EUCJPName)
-                val csSJIS = forName(SJISName)
+                val csEUCJ = Charsets.forName(EUCJPName)
+                val csSJIS = Charsets.forName(SJISName)
 
                 val ddEUCJ: DelegatableDecoder = csEUCJ.newDecoder() as DelegatableDecoder
                 val ddSJIS: DelegatableDecoder = csSJIS.newDecoder() as DelegatableDecoder
@@ -72,12 +74,12 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
                 sandbox.clear()
                 val resEUCJ: CoderResult = ddEUCJ.decodeLoop(srcEUCJ, sandbox)
                 // If EUC decoding fails, must be SJIS
-                if (resEUCJ.isError) return decodeLoop(ddSJIS, src, dst)
+                if (resEUCJ.isError()) return decodeLoop(ddSJIS, src, dst)
                 val srcSJIS: ByteBuffer = src.asReadOnlyBuffer()
                 val sandboxSJIS: CharBuffer = CharBufferFactory.allocate(cbufsiz)
                 val resSJIS: CoderResult = ddSJIS.decodeLoop(srcSJIS, sandboxSJIS)
                 // If SJIS decoding fails, must be EUC
-                if (resSJIS.isError) return decodeLoop(ddEUCJ, src, dst)
+                if (resSJIS.isError()) return decodeLoop(ddEUCJ, src, dst)
 
                 // From here on, we have some ambiguity, and must guess.
 
@@ -87,7 +89,7 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
                 if (srcEUCJ.position() < srcSJIS.position()) return decodeLoop(ddSJIS, src, dst)
 
                 // end-of-input is after the first byte of the first char?
-                if (src.position() == srcEUCJ.position()) return CoderResult.UNDERFLOW
+                if (src.position() == srcEUCJ.position()) return CoderResultInternal.UNDERFLOW
 
                 // Use heuristic knowledge of typical Japanese text
                 sandbox.flip()
@@ -104,17 +106,6 @@ class JISAutoDetect : Charset("x-JISAutoDetect") {
         override fun implFlush(out: CharBuffer): CoderResult {
             return if (detectedDecoder != null) detectedDecoder!!.implFlush(out)
             else super.implFlush(out)
-        }
-
-        val isAutoDetecting: Boolean
-            get() = true
-
-        val isCharsetDetected: Boolean
-            get() = detectedDecoder != null
-
-        fun detectedCharset(): Charset {
-            checkNotNull(detectedDecoder) { "charset not yet detected" }
-            return (detectedDecoder as CharsetDecoder).charset
         }
 
 

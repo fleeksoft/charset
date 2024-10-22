@@ -7,9 +7,9 @@ import com.fleeksoft.charset.cs.CharsetMapping
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.HKSCS
 
-class MS950_HKSCS_XP : Charset("x-MS950-HKSCS-XP") {
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is MS950) || (cs is MS950_HKSCS_XP))
+class MS950_HKSCS_XP : Charset("x-MS950-HKSCS-XP", null) {
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is MS950) || (cs is MS950_HKSCS_XP))
     }
 
     override fun newDecoder(): CharsetDecoder {

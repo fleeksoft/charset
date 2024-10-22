@@ -6,10 +6,10 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.HKSCS
 
-class Big5_HKSCS : Charset("Big5-HKSCS") {
+class Big5_HKSCS : Charset("Big5-HKSCS", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is Big5)
                 || (cs is Big5_HKSCS))
     }
@@ -36,8 +36,7 @@ class Big5_HKSCS : Charset("Big5-HKSCS") {
         }
     }
 
-    internal class Encoder(cs: Charset) :
-        HKSCS.Encoder(cs, big5, c2bBmp, c2bSupp) {
+    internal class Encoder(cs: Charset) : HKSCS.Encoder(cs, big5, c2bBmp, c2bSupp) {
         companion object {
             private val big5 = Big5().newEncoder() as DoubleByte.Encoder
 

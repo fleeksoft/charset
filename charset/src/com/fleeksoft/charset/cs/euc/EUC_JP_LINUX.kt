@@ -6,13 +6,13 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.jis.JIS_X_0201
 
 
-class EUC_JP_LINUX : Charset("x-euc-jp-linux") {
+class EUC_JP_LINUX : Charset("x-euc-jp-linux", null) {
     companion object {
         val INSTANCE = EUC_JP_LINUX()
     }
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs is JIS_X_0201) || (cs.name == "US-ASCII") || (cs is EUC_JP_LINUX))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs is JIS_X_0201) || (cs.name() == "US-ASCII") || (cs is EUC_JP_LINUX))
     }
 
     override fun newDecoder(): CharsetDecoder {

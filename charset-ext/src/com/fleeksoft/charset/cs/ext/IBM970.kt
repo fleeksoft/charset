@@ -5,11 +5,11 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class IBM970 : Charset("x-IBM970") {
+class IBM970 : Charset("x-IBM970", null) {
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is IBM970))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is IBM970))
     }
 
     override fun newDecoder(): CharsetDecoder {

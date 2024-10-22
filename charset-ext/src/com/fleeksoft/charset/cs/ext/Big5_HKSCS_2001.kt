@@ -6,9 +6,9 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.HKSCS
 
-class Big5_HKSCS_2001 : Charset("x-Big5-HKSCS-2001") {
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+class Big5_HKSCS_2001 : Charset("x-Big5-HKSCS-2001", null) {
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is Big5)
                 || (cs is Big5_HKSCS_2001))
     }

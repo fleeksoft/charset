@@ -3,6 +3,7 @@ package com.fleeksoft.charset.cs
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
@@ -51,24 +52,24 @@ internal abstract class UnicodeDecoder(cs: Charset, private var currentByteOrder
                 // Surrogates
                 if (Character.isSurrogate(c)) {
                     if (Character.isHighSurrogate(c)) {
-                        if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                         val c2 = decode(src.getInt() and 0xff, src.getInt() and 0xff)
-                        if (!Character.isLowSurrogate(c2)) return CoderResult.malformedForLength(4)
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (!Character.isLowSurrogate(c2)) return CoderResultInternal.malformedForLength(4)
+                        if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                         mark += 4
                         dst.put(c)
                         dst.put(c2)
                         continue
                     }
                     // Unpaired low surrogate
-                    return CoderResult.malformedForLength(2)
+                    return CoderResultInternal.malformedForLength(2)
                 }
 
-                if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                 mark += 2
                 dst.put(c)
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         } finally {
             src.position(mark)
         }

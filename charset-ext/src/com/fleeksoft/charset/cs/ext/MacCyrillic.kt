@@ -7,10 +7,10 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class MacCyrillic : Charset("x-MacCyrillic") {
+class MacCyrillic : Charset("x-MacCyrillic", null) {
     
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is MacCyrillic)
     }
 

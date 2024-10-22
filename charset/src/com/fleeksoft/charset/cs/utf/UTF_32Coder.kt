@@ -4,6 +4,7 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
@@ -37,7 +38,7 @@ object UTF_32Coder {
         }
 
         override fun decodeLoop(src: ByteBuffer, dst: CharBuffer): CoderResult {
-            if (src.remaining() < 4) return CoderResult.UNDERFLOW
+            if (src.remaining() < 4) return CoderResultInternal.UNDERFLOW
             var mark: Int = src.position()
             var cp: Int
             try {
@@ -61,19 +62,19 @@ object UTF_32Coder {
                 while (src.remaining() >= 4) {
                     cp = getCP(src)
                     if (Character.isBmpCodePoint(cp)) {
-                        if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                        if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                         mark += 4
                         dst.put(cp.toChar())
                     } else if (Character.isValidCodePoint(cp)) {
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                         mark += 4
                         dst.put(Character.highSurrogate(cp))
                         dst.put(Character.lowSurrogate(cp))
                     } else {
-                        return CoderResult.malformedForLength(4)
+                        return CoderResultInternal.malformedForLength(4)
                     }
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -117,7 +118,7 @@ object UTF_32Coder {
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
             var mark: Int = src.position()
             if (!doneBOM && src.hasRemaining()) {
-                if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                 put(BOM_BIG, dst)
                 doneBOM = true
             }
@@ -125,25 +126,25 @@ object UTF_32Coder {
                 while (src.hasRemaining()) {
                     val c: Char = src.get()
                     if (!Character.isSurrogate(c)) {
-                        if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                         mark++
                         put(c.code, dst)
                     } else if (Character.isHighSurrogate(c)) {
-                        if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                        if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                         val low: Char = src.get()
                         if (Character.isLowSurrogate(low)) {
-                            if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                             mark += 2
                             put(Character.toCodePoint(c, low), dst)
                         } else {
-                            return CoderResult.malformedForLength(1)
+                            return CoderResultInternal.malformedForLength(1)
                         }
                     } else {
                         // assert Character.isLowSurrogate(c);
-                        return CoderResult.malformedForLength(1)
+                        return CoderResultInternal.malformedForLength(1)
                     }
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

@@ -6,16 +6,17 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
-class ISCII91 : Charset("x-ISCII91") {
+class ISCII91 : Charset("x-ISCII91", null) {
 
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is ISCII91))
     }
 
@@ -35,14 +36,14 @@ class ISCII91 : Charset("x-ISCII91") {
         override fun implFlush(out: CharBuffer): CoderResult {
             if (needFlushing) {
                 if (out.remaining() < 1) {
-                    return CoderResult.OVERFLOW
+                    return CoderResultInternal.OVERFLOW
                 } else {
                     out.put(contextChar)
                 }
             }
             contextChar = INVALID_CHAR
             needFlushing = false
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         /* Rules:
@@ -71,7 +72,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     // if the contextChar is either ATR || EXT
                     // set the output to '\ufffd'
                     if (contextChar == '\ufffd') {
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = '\ufffd'
                         contextChar = INVALID_CHAR
                         needFlushing = false
@@ -82,7 +83,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     when (currentChar) {
                         '\u0901', '\u0907', '\u0908', '\u090b', '\u093f', '\u0940', '\u0943', '\u0964' -> {
                             if (needFlushing) {
-                                if (dl - dp < 1) return CoderResult.OVERFLOW
+                                if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                                 da[dp++] = contextChar
                                 contextChar = currentChar
                                 sp++
@@ -95,7 +96,7 @@ class ISCII91 : Charset("x-ISCII91") {
                         }
 
                         NUKTA_CHAR -> {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             when (contextChar) {
                                 '\u0901' -> da[dp++] = '\u0950'
                                 '\u0907' -> da[dp++] = '\u090c'
@@ -128,7 +129,7 @@ class ISCII91 : Charset("x-ISCII91") {
                         }
 
                         HALANT_CHAR -> {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             if (needFlushing) {
                                 da[dp++] = contextChar
                                 contextChar = currentChar
@@ -144,17 +145,17 @@ class ISCII91 : Charset("x-ISCII91") {
 
                         INVALID_CHAR -> {
                             if (needFlushing) {
-                                if (dl - dp < 1) return CoderResult.OVERFLOW
+                                if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                                 da[dp++] = contextChar
                                 contextChar = currentChar
                                 sp++
                                 continue
                             }
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
 
                         else -> {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             if (needFlushing) {
                                 da[dp++] = contextChar
                                 contextChar = currentChar
@@ -169,7 +170,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     needFlushing = false
                     sp++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -188,7 +189,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     // if the contextChar is either ATR || EXT
                     // set the output to '\ufffd'
                     if (contextChar == '\ufffd') {
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put('\ufffd')
                         contextChar = INVALID_CHAR
                         needFlushing = false
@@ -199,7 +200,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     when (currentChar) {
                         '\u0901', '\u0907', '\u0908', '\u090b', '\u093f', '\u0940', '\u0943', '\u0964' -> {
                             if (needFlushing) {
-                                if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                                 dst.put(contextChar)
                                 contextChar = currentChar
                                 mark++
@@ -212,7 +213,7 @@ class ISCII91 : Charset("x-ISCII91") {
                         }
 
                         NUKTA_CHAR -> {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                             when (contextChar) {
                                 '\u0901' -> dst.put('\u0950')
                                 '\u0907' -> dst.put('\u090c')
@@ -245,7 +246,7 @@ class ISCII91 : Charset("x-ISCII91") {
                         }
 
                         HALANT_CHAR -> {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                             if (needFlushing) {
                                 dst.put(contextChar)
                                 contextChar = currentChar
@@ -261,17 +262,17 @@ class ISCII91 : Charset("x-ISCII91") {
 
                         INVALID_CHAR -> {
                             if (needFlushing) {
-                                if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                                if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                                 dst.put(contextChar)
                                 contextChar = currentChar
                                 mark++
                                 continue
                             }
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
 
                         else -> {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                             if (needFlushing) {
                                 dst.put(contextChar)
                                 contextChar = currentChar
@@ -285,7 +286,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     needFlushing = false
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -338,7 +339,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     inputChar = sa[sp]
 
                     if (inputChar.code >= 0x0000 && inputChar.code <= 0x007f) {
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = inputChar.code.toByte()
                         sp++
                         continue
@@ -364,20 +365,20 @@ class ISCII91 : Charset("x-ISCII91") {
                     if (index == Int.MIN_VALUE ||
                         encoderMappingTable[index] == NO_CHAR
                     ) {
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     } else {
                         if (encoderMappingTable[index + 1] == NO_CHAR) {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             da[dp++] = encoderMappingTable[index]
                         } else {
-                            if (dl - dp < 2) return CoderResult.OVERFLOW
+                            if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                             da[dp++] = encoderMappingTable[index]
                             da[dp++] = encoderMappingTable[index + 1]
                         }
                         sp++
                     }
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -394,7 +395,7 @@ class ISCII91 : Charset("x-ISCII91") {
                     inputChar = src.get()
 
                     if (inputChar.code >= 0x0000 && inputChar.code <= 0x007f) {
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put(inputChar.code.toByte())
                         mark++
                         continue
@@ -420,20 +421,20 @@ class ISCII91 : Charset("x-ISCII91") {
                     if (index == Int.MIN_VALUE ||
                         encoderMappingTable[index] == NO_CHAR
                     ) {
-                        return CoderResult.unmappableForLength(1)
+                        return CoderResultInternal.unmappableForLength(1)
                     } else {
                         if (encoderMappingTable[index + 1] == NO_CHAR) {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                             dst.put(encoderMappingTable[index])
                         } else {
-                            if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                             dst.put(encoderMappingTable[index])
                             dst.put(encoderMappingTable[index + 1])
                         }
                     }
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

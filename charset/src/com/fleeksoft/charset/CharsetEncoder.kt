@@ -1,14 +1,8 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.internal.ArraysSupport
-import com.fleeksoft.charset.internal.WeakReference
-import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.ByteBufferFactory
 import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.io.CoderMalfunctionError
-import kotlin.math.min
 
 /**
  * Initializes a new encoder.  The new encoder will have the given
@@ -17,11 +11,11 @@ import kotlin.math.min
  * @param  cs
  * The charset that created this encoder
  *
- * @param  averageBytesPerChar
+ * @param  _averageBytesPerChar
  * A positive float value indicating the expected number of
  * bytes that will be produced for each input character
  *
- * @param  maxBytesPerChar
+ * @param  _maxBytesPerChar
  * A positive float value indicating the maximum number of
  * bytes that will be produced for each input character
  *
@@ -33,28 +27,14 @@ import kotlin.math.min
  * @throws  IllegalArgumentException
  * If the preconditions on the parameters do not hold
  */
-abstract class CharsetEncoder protected constructor(
-    private val charset: Charset,
-    private val averageBytesPerChar: Float,
-    private val maxBytesPerChar: Float,
+expect abstract class CharsetEncoder protected constructor(
+    _charset: Charset,
+    _averageBytesPerChar: Float,
+    _maxBytesPerChar: Float,
     replacement: ByteArray
 ) {
-    var malformedInputAction = CodingErrorAction.REPORT
-        private set
-    var unmappableCharacterAction = CodingErrorAction.REPORT
-        private set
-
-    private var state = ST_RESET
-    private var replacement: ByteArray? = null
-
-    init {
-        // Use !(a > 0.0f) rather than (a <= 0.0f) to exclude NaN values
-        require(averageBytesPerChar > 0.0f) { "Non-positive averageBytesPerChar" }
-        // Use !(a > 0.0f) rather than (a <= 0.0f) to exclude NaN values
-        require(maxBytesPerChar > 0.0f) { "Non-positive maxBytesPerChar" }
-        require(!(averageBytesPerChar > maxBytesPerChar)) { "averageBytesPerChar exceeds maxBytesPerChar" }
-        replaceWith(replacement)
-    }
+    fun malformedInputAction(): CodingErrorAction
+    fun unmappableCharacterAction(): CodingErrorAction
 
     /**
      * Initializes a new encoder.  The new encoder will have the given
@@ -79,10 +59,6 @@ abstract class CharsetEncoder protected constructor(
         cs: Charset,
         averageBytesPerChar: Float,
         maxBytesPerChar: Float
-    ) : this(
-        cs,
-        averageBytesPerChar, maxBytesPerChar,
-        byteArrayOf('?'.code.toByte())
     )
 
     /**
@@ -90,9 +66,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @return  This encoder's charset
      */
-    fun charset(): Charset {
-        return charset
-    }
+    fun charset(): Charset
 
     /**
      * Returns this encoder's replacement value.
@@ -100,9 +74,7 @@ abstract class CharsetEncoder protected constructor(
      * @return  This encoder's current replacement,
      * which is never `null` and is never empty
      */
-    fun replacement(): ByteArray {
-        return replacement!!.copyOf()
-    }
+    fun replacement(): ByteArray
 
     /**
      * Changes this encoder's replacement value.
@@ -129,21 +101,7 @@ abstract class CharsetEncoder protected constructor(
      * @throws  IllegalArgumentException
      * If the preconditions on the parameter do not hold
      */
-    fun replaceWith(newReplacement: ByteArray): CharsetEncoder {
-        requireNotNull(newReplacement) { "Null replacement" }
-        val len = newReplacement.size
-        require(len != 0) { "Empty replacement" }
-        require(!(len > maxBytesPerChar)) { "Replacement too long" }
-
-
-
-
-        require(isLegalReplacement(newReplacement)) { "Illegal replacement" }
-        this.replacement = newReplacement.copyOf()
-
-        implReplaceWith(this.replacement!!)
-        return this
-    }
+    fun replaceWith(newReplacement: ByteArray): CharsetEncoder
 
     /**
      * Reports a change to this encoder's replacement value.
@@ -155,11 +113,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @param  newReplacement    The replacement value
      */
-    protected open fun implReplaceWith(newReplacement: ByteArray) {
-    }
-
-
-    private var cachedDecoder: WeakReference<CharsetDecoder>? = null
+    protected open fun implReplaceWith(newReplacement: ByteArray)
 
     /**
      * Tells whether or not the given byte array is a legal replacement value
@@ -179,22 +133,7 @@ abstract class CharsetEncoder protected constructor(
      * @return  `true` if, and only if, the given byte array
      * is a legal replacement value for this encoder
      */
-    open fun isLegalReplacement(repl: ByteArray): Boolean {
-        val wr: WeakReference<CharsetDecoder>? = cachedDecoder
-        var dec: CharsetDecoder? = null
-        if ((wr == null) || ((wr.get()?.also { dec = it }) == null)) {
-            dec = charset().newDecoder()
-            dec.onMalformedInput(CodingErrorAction.REPORT)
-            dec.onUnmappableCharacter(CodingErrorAction.REPORT)
-            cachedDecoder = WeakReference<CharsetDecoder>(dec)
-        } else {
-            dec?.reset()
-        }
-        val bb = ByteBufferFactory.wrap(repl)
-        val cb: CharBuffer = CharBufferFactory.allocate((bb.remaining() * dec!!.maxCharsPerByte).toInt())
-        val cr = dec.decode(bb, cb, true)
-        return !cr.isError
-    }
+    open fun isLegalReplacement(repl: ByteArray): Boolean
 
 
     /**
@@ -210,12 +149,7 @@ abstract class CharsetEncoder protected constructor(
      * @throws IllegalArgumentException
      * If the precondition on the parameter does not hold
      */
-    fun onMalformedInput(newAction: CodingErrorAction): CharsetEncoder {
-        requireNotNull(newAction) { "Null action" }
-        malformedInputAction = newAction
-        implOnMalformedInput(newAction)
-        return this
-    }
+    fun onMalformedInput(newAction: CodingErrorAction): CharsetEncoder
 
     /**
      * Reports a change to this encoder's malformed-input action.
@@ -227,7 +161,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @param  newAction  The new action
      */
-    protected fun implOnMalformedInput(newAction: CodingErrorAction) {}
+    protected fun implOnMalformedInput(newAction: CodingErrorAction)
 
     /**
      * Changes this encoder's action for unmappable-character errors.
@@ -242,12 +176,7 @@ abstract class CharsetEncoder protected constructor(
      * @throws IllegalArgumentException
      * If the precondition on the parameter does not hold
      */
-    fun onUnmappableCharacter(newAction: CodingErrorAction): CharsetEncoder {
-        requireNotNull(newAction) { "Null action" }
-        unmappableCharacterAction = newAction
-        implOnUnmappableCharacter(newAction)
-        return this
-    }
+    fun onUnmappableCharacter(newAction: CodingErrorAction): CharsetEncoder
 
     /**
      * Reports a change to this encoder's unmappable-character action.
@@ -259,7 +188,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @param  newAction  The new action
      */
-    protected fun implOnUnmappableCharacter(newAction: CodingErrorAction) {}
+    protected fun implOnUnmappableCharacter(newAction: CodingErrorAction)
 
     /**
      * Returns the average number of bytes that will be produced for each
@@ -269,9 +198,7 @@ abstract class CharsetEncoder protected constructor(
      * @return  The average number of bytes produced
      * per character of input
      */
-    fun averageBytesPerChar(): Float {
-        return averageBytesPerChar
-    }
+    fun averageBytesPerChar(): Float
 
     /**
      * Returns the maximum number of bytes that will be produced for each
@@ -288,9 +215,7 @@ abstract class CharsetEncoder protected constructor(
      * @return  The maximum number of bytes that will be produced per
      * character of input
      */
-    fun maxBytesPerChar(): Float {
-        return maxBytesPerChar
-    }
+    fun maxBytesPerChar(): Float
 
     /**
      * Encodes as many characters as possible from the given input buffer,
@@ -313,7 +238,7 @@ abstract class CharsetEncoder protected constructor(
      *
      *  *
      *
-     * [CoderResult.UNDERFLOW] indicates that as much of the
+     * [CoderResultInternal.UNDERFLOW] indicates that as much of the
      * input buffer as possible has been encoded.  If there is no further
      * input then the invoker can proceed to the next step of the
      * [encoding operation](#steps).  Otherwise this method
@@ -321,7 +246,7 @@ abstract class CharsetEncoder protected constructor(
      *
      *  *
      *
-     * [CoderResult.OVERFLOW] indicates that there is
+     * [CoderResultInternal.OVERFLOW] indicates that there is
      * insufficient space in the output buffer to encode any more characters.
      * This method should be invoked again with an output buffer that has
      * more [remaining][com.fleeksoft.charset.io.Buffer.remaining] bytes. This is
@@ -330,7 +255,7 @@ abstract class CharsetEncoder protected constructor(
      *
      *  *
      *
-     * A [   malformed-input][CoderResult.malformedForLength] result indicates that a malformed-input
+     * A [   malformed-input][CoderResultInternal.malformedForLength] result indicates that a malformed-input
      * error has been detected.  The malformed characters begin at the input
      * buffer's (possibly incremented) position; the number of malformed
      * characters may be determined by invoking the result object's [   ][CoderResult.length] method.  This case applies only if the
@@ -340,7 +265,7 @@ abstract class CharsetEncoder protected constructor(
      *
      *  *
      *
-     * An [   unmappable-character][CoderResult.unmappableForLength] result indicates that an
+     * An [   unmappable-character][CoderResultInternal.unmappableForLength] result indicates that an
      * unmappable-character error has been detected.  The characters that
      * encode the unmappable character begin at the input buffer's (possibly
      * incremented) position; the number of such characters may be determined
@@ -397,54 +322,7 @@ abstract class CharsetEncoder protected constructor(
      * If an invocation of the encodeLoop method threw
      * an unexpected exception
      */
-    fun encode(
-        inCharBuffer: CharBuffer, out: ByteBuffer,
-        endOfInput: Boolean
-    ): CoderResult {
-        val newState = if (endOfInput) ST_END else ST_CODING
-        if ((state != ST_RESET) && (state != ST_CODING) && !(endOfInput && (state == ST_END))) throwIllegalStateException(state, newState)
-        state = newState
-
-        while (true) {
-            var cr: CoderResult
-            try {
-                cr = encodeLoop(inCharBuffer, out)
-            } catch (x: RuntimeException) {
-                throw CoderMalfunctionError(x)
-            }
-
-            if (cr.isOverflow) return cr
-
-            if (cr.isUnderflow) {
-                if (endOfInput && inCharBuffer.hasRemaining()) {
-                    cr = CoderResult.malformedForLength(inCharBuffer.remaining())
-                    // Fall through to malformed-input case
-                } else {
-                    return cr
-                }
-            }
-
-            var action: CodingErrorAction? = null
-            if (cr.isMalformed) action = malformedInputAction
-            else if (cr.isUnmappable) action = unmappableCharacterAction
-            else assert(false) { cr.toString() }
-
-            if (action == CodingErrorAction.REPORT) return cr
-
-            if (action == CodingErrorAction.REPLACE) {
-                if (out.remaining() < replacement!!.size) return CoderResult.OVERFLOW
-                out.put(replacement!!)
-            }
-
-            if ((action == CodingErrorAction.IGNORE) || (action == CodingErrorAction.REPLACE)) {
-                // Skip erroneous input either way
-                inCharBuffer.position(inCharBuffer.position() + cr.length())
-                continue
-            }
-
-            assert(false)
-        }
-    }
+    fun encode(inCharBuffer: CharBuffer, out: ByteBuffer, endOfInput: Boolean): CoderResult
 
     /**
      * Flushes this encoder.
@@ -461,8 +339,8 @@ abstract class CharsetEncoder protected constructor(
      * appropriately, but its mark and limit will not be modified.
      *
      *
-     *  If this method completes successfully then it returns [ ][CoderResult.UNDERFLOW].  If there is insufficient room in the output
-     * buffer then it returns [CoderResult.OVERFLOW].  If this happens
+     *  If this method completes successfully then it returns [ ][CoderResultInternal.UNDERFLOW].  If there is insufficient room in the output
+     * buffer then it returns [CoderResultInternal.OVERFLOW].  If this happens
      * then this method must be invoked again, with an output buffer that has
      * more room, in order to complete the current [encoding
  * operation](#steps).
@@ -478,8 +356,8 @@ abstract class CharsetEncoder protected constructor(
      * @param  out
      * The output byte buffer
      *
-     * @return  A coder-result object, either [CoderResult.UNDERFLOW] or
-     * [CoderResult.OVERFLOW]
+     * @return  A coder-result object, either [CoderResultInternal.UNDERFLOW] or
+     * [CoderResultInternal.OVERFLOW]
      *
      * @throws  IllegalStateException
      * If the previous step of the current encoding operation was an
@@ -488,36 +366,24 @@ abstract class CharsetEncoder protected constructor(
      * with a value of `true` for the `endOfInput`
      * parameter
      */
-    fun flush(out: ByteBuffer): CoderResult {
-        if (state == ST_END) {
-            val cr = implFlush(out)
-            if (cr.isUnderflow) state = ST_FLUSHED
-            return cr
-        }
-
-        if (state != ST_FLUSHED) throwIllegalStateException(state, ST_FLUSHED)
-
-        return CoderResult.UNDERFLOW // Already flushed
-    }
+    fun flush(out: ByteBuffer): CoderResult
 
     /**
      * Flushes this encoder.
      *
      *
      *  The default implementation of this method does nothing, and always
-     * returns [CoderResult.UNDERFLOW].  This method should be overridden
+     * returns [CoderResultInternal.UNDERFLOW].  This method should be overridden
      * by encoders that may need to write final bytes to the output buffer
      * once the entire input sequence has been read.
      *
      * @param  out
      * The output byte buffer
      *
-     * @return  A coder-result object, either [CoderResult.UNDERFLOW] or
-     * [CoderResult.OVERFLOW]
+     * @return  A coder-result object, either [CoderResultInternal.UNDERFLOW] or
+     * [CoderResultInternal.OVERFLOW]
      */
-    protected open fun implFlush(out: ByteBuffer): CoderResult {
-        return CoderResult.UNDERFLOW
-    }
+    protected open fun implFlush(out: ByteBuffer): CoderResult
 
     /**
      * Resets this encoder, clearing any internal state.
@@ -529,11 +395,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @return  This encoder
      */
-    fun reset(): CharsetEncoder {
-        implReset()
-        state = ST_RESET
-        return this
-    }
+    fun reset(): CharsetEncoder
 
     /**
      * Resets this encoder, clearing any charset-specific internal state.
@@ -542,7 +404,7 @@ abstract class CharsetEncoder protected constructor(
      *  The default implementation of this method does nothing.  This method
      * should be overridden by encoders that maintain internal state.
      */
-    protected open fun implReset() {}
+    protected open fun implReset()
 
     /**
      * Encodes one or more characters into one or more bytes.
@@ -572,7 +434,7 @@ abstract class CharsetEncoder protected constructor(
      *
      *
      *  An implementation of this method may perform arbitrary lookahead by
-     * returning [CoderResult.UNDERFLOW] until it receives sufficient
+     * returning [CoderResultInternal.UNDERFLOW] until it receives sufficient
      * input.
      *
      * @param inBuffer
@@ -583,10 +445,7 @@ abstract class CharsetEncoder protected constructor(
      *
      * @return  A coder-result object describing the reason for termination
      */
-    protected abstract fun encodeLoop(
-        inBuffer: CharBuffer,
-        outBuffer: ByteBuffer
-    ): CoderResult
+    protected abstract fun encodeLoop(inBuffer: CharBuffer, outBuffer: ByteBuffer): CoderResult
 
     /**
      * Convenience method that encodes the remaining content of a single input
@@ -633,55 +492,7 @@ abstract class CharsetEncoder protected constructor(
      * character buffer cannot be allocated
      */
 
-    fun encode(inCharBuffer: CharBuffer): ByteBuffer {
-        var n: Int = min(
-            (inCharBuffer.remaining() * averageBytesPerChar()).toInt(),
-            ArraysSupport.SOFT_MAX_ARRAY_LENGTH
-        )
-        var out: ByteBuffer = ByteBufferFactory.allocate(n)
-
-        if ((n == 0) && (inCharBuffer.remaining() == 0)) return out
-        reset()
-        while (true) {
-            var cr = if (inCharBuffer.hasRemaining()) encode(inCharBuffer, out, true) else CoderResult.UNDERFLOW
-            if (cr.isUnderflow) cr = flush(out)
-
-            if (cr.isUnderflow) break
-            if (cr.isOverflow) {
-                // Ensure progress; n might be 0!
-                n = ArraysSupport.newLength(n, min(n + 1, 1024), n + 1)
-                val o: ByteBuffer = ByteBufferFactory.allocate(n)
-                out.flip()
-                o.put(out)
-                // todo: check if out buffer empty after copying
-                out = o
-                continue
-            }
-            cr.throwException()
-        }
-        out.flip()
-        return out
-    }
-
-
-    private fun canEncode(cb: CharBuffer): Boolean {
-        if (state == ST_FLUSHED) reset()
-        else if (state != ST_RESET) throwIllegalStateException(state, ST_CODING)
-        val ma = malformedInputAction
-        val ua = unmappableCharacterAction
-        try {
-            onMalformedInput(CodingErrorAction.REPORT)
-            onUnmappableCharacter(CodingErrorAction.REPORT)
-            encode(cb)
-        } catch (x: CharacterCodingException) {
-            return false
-        } finally {
-            onMalformedInput(ma)
-            onUnmappableCharacter(ua)
-            reset()
-        }
-        return true
-    }
+    fun encode(cb: CharBuffer): ByteBuffer
 
     /**
      * Tells whether or not this encoder can encode the given character.
@@ -711,12 +522,7 @@ abstract class CharsetEncoder protected constructor(
      * @throws  IllegalStateException
      * If an encoding operation is already in progress
      */
-    open fun canEncode(c: Char): Boolean {
-        val cb: CharBuffer = CharBufferFactory.allocate(1)
-        cb.put(c)
-        cb.flip()
-        return canEncode(cb)
-    }
+    open fun canEncode(c: Char): Boolean
 
     /**
      * Tells whether or not this encoder can encode the given character
@@ -746,27 +552,5 @@ abstract class CharsetEncoder protected constructor(
      * @throws  IllegalStateException
      * If an encoding operation is already in progress
      */
-    open fun canEncode(cs: CharSequence): Boolean {
-        val cb: CharBuffer = if (cs is CharBuffer) cs.duplicate() else CharBufferFactory.wrap(cs.toString())
-        return canEncode(cb)
-    }
-
-
-    private fun throwIllegalStateException(from: Int, to: Int) {
-        throw IllegalStateException(
-            ("Current state = " + stateNames!![from]
-                    + ", new state = " + stateNames[to])
-        )
-    }
-
-    companion object {
-        // Internal states
-        //
-        private const val ST_RESET = 0
-        private const val ST_CODING = 1
-        private const val ST_END = 2
-        private const val ST_FLUSHED = 3
-
-        private val stateNames: Array<String?>? = arrayOf<String?>("RESET", "CODING", "CODING_END", "FLUSHED")
-    }
+    open fun canEncode(cs: CharSequence): Boolean
 }

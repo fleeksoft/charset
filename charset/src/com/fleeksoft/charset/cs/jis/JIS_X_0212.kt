@@ -5,13 +5,13 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.DoubleByte
 
-class JIS_X_0212 : Charset("JIS_X0212-1990") {
+class JIS_X_0212 : Charset("JIS_X0212-1990", null) {
 
     companion object {
         val INSTANCE = JIS_X_0212()
     }
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is JIS_X_0212)
     }
 

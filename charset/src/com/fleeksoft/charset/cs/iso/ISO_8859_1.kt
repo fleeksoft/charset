@@ -7,14 +7,15 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.cs.US_ASCII
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import kotlin.math.min
 
-class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
+class ISO_8859_1 private constructor() : Charset("ISO-8859-1", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return ((cs is US_ASCII) || (cs is ISO_8859_1))
     }
 
@@ -45,9 +46,9 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
             src.position(sp - soff)
             dst.position(dp - doff)
             if (sl - sp > dl - dp) {
-                return CoderResult.OVERFLOW
+                return CoderResultInternal.OVERFLOW
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         fun decodeBufferLoop(
@@ -58,11 +59,11 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
             try {
                 while (src.hasRemaining()) {
                     val b: Byte = src.get()
-                    if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                    if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                     dst.put((b.toInt() and 0xff).toChar())
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -108,8 +109,8 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
                     if (sgp.parse(sa[sp], sa, sp, sl) < 0) return sgp.error()
                     return sgp.unmappableResult()
                 }
-                if (len < slen) return CoderResult.OVERFLOW
-                return CoderResult.UNDERFLOW
+                if (len < slen) return CoderResultInternal.OVERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - soff)
                 dst.position(dp - doff)
@@ -125,7 +126,7 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
                 while (src.hasRemaining()) {
                     val c: Char = src.get()
                     if (c <= '\u00FF') {
-                        if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                        if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                         dst.put(c.code.toByte())
                         mark++
                         continue
@@ -133,7 +134,7 @@ class ISO_8859_1 private constructor() : Charset("ISO-8859-1") {
                     if (sgp.parse(c, src) < 0) return sgp.error()
                     return sgp.unmappableResult()
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

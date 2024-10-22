@@ -5,10 +5,10 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.SingleByte
 
-class KOI8_U private constructor() : Charset("KOI8-U") {
+class KOI8_U private constructor() : Charset("KOI8-U", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is KOI8_U))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is KOI8_U))
     }
 
     override fun newDecoder(): CharsetDecoder {

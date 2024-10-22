@@ -7,11 +7,11 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class ISO_8859_11 : Charset("x-iso-8859-11") {
+class ISO_8859_11 : Charset("x-iso-8859-11", null) {
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is ISO_8859_11))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is ISO_8859_11))
     }
 
     override fun newDecoder(): CharsetDecoder {

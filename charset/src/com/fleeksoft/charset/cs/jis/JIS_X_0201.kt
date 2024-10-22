@@ -7,15 +7,15 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class JIS_X_0201 : Charset("JIS_X0201") {
+class JIS_X_0201 : Charset("JIS_X0201", null) {
     companion object {
         val INSTANCE = JIS_X_0201()
     }
 
     
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is JIS_X_0201))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is JIS_X_0201))
     }
 
     override fun newDecoder(): CharsetDecoder {

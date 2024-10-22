@@ -3,6 +3,7 @@ package com.fleeksoft.charset.cs
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.lang.Character
@@ -37,7 +38,7 @@ abstract class UnicodeEncoder protected constructor(cs: Charset, bo: Int, privat
         var mark: Int = src.position()
 
         if (needsMark && src.hasRemaining()) {
-            if (dst.remaining() < 2) return CoderResult.OVERFLOW
+            if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
             put(BYTE_ORDER_MARK, dst)
             needsMark = false
         }
@@ -45,19 +46,19 @@ abstract class UnicodeEncoder protected constructor(cs: Charset, bo: Int, privat
             while (src.hasRemaining()) {
                 val c: Char = src.get()
                 if (!Character.isSurrogate(c)) {
-                    if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                    if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                     mark++
                     put(c, dst)
                     continue
                 }
                 val d = sgp.parse(c, src)
                 if (d < 0) return sgp.error()
-                if (dst.remaining() < 4) return CoderResult.OVERFLOW
+                if (dst.remaining() < 4) return CoderResultInternal.OVERFLOW
                 mark += 2
                 put(Character.highSurrogate(d), dst)
                 put(Character.lowSurrogate(d), dst)
             }
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         } finally {
             src.position(mark)
         }

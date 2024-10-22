@@ -1,12 +1,12 @@
 package com.fleeksoft.charset.ext
 
-import com.fleeksoft.charset.Charset
+import com.fleeksoft.charset.Charsets
 import kotlin.test.Test
 
 class ExtendedCharsetsPrint {
     fun charset(name: String, className: String, aliases: Array<String>) {
-        val normalizedAliases = aliases.map { Charset.normalizeCharsetName(it) }.toMutableSet()
-        normalizedAliases.add(Charset.normalizeCharsetName(name))
+        val normalizedAliases = aliases.map { Charsets.normalizeCharsetName(it) }.toMutableSet()
+        normalizedAliases.add(Charsets.normalizeCharsetName(name))
 
 //        println("${normalizedAliases.joinToString(", ") { "\"$it\"" }} -> { ${className}() }")
         /*normalizedAliases.forEach { alias ->

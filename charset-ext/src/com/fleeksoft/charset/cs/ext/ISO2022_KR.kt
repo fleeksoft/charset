@@ -6,6 +6,7 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.euc.EUC_KR
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
@@ -16,10 +17,10 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
         val ksc5601_cs: Charset = EUC_KR()
     }
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         // overlapping repertoire of EUC_KR, aka KSC5601
         return ((cs is EUC_KR) ||
-                (cs.name == "US-ASCII") ||
+                (cs.name() == "US-ASCII") ||
                 (cs is ISO2022_KR))
     }
 
@@ -103,20 +104,20 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                         }
 
                         ISO_ESC -> {
-                            if (sl - sp - 1 < minDesignatorLength) return CoderResult.UNDERFLOW
+                            if (sl - sp - 1 < minDesignatorLength) return CoderResultInternal.UNDERFLOW
 
                             if (findDesig(sa, sp + 1, sl)) {
                                 inputSize = SOD.size + 1
                                 break
                             }
-                            if (sl - sp < 2) return CoderResult.UNDERFLOW
+                            if (sl - sp < 2) return CoderResultInternal.UNDERFLOW
                             b1 = sa[sp + 1].toInt()
                             when (b1) {
                                 ISO_SS2_7 -> {
-                                    if (sl - sp < 4) return CoderResult.UNDERFLOW
+                                    if (sl - sp < 4) return CoderResultInternal.UNDERFLOW
                                     b2 = sa[sp + 2].toInt()
                                     b3 = sa[sp + 3].toInt()
-                                    if (dl - dp < 1) return CoderResult.OVERFLOW
+                                    if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                                     da[dp] = decode(
                                         b2.toByte(),
                                         b3.toByte(),
@@ -127,10 +128,10 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                                 }
 
                                 ISO_SS3_7 -> {
-                                    if (sl - sp < 4) return CoderResult.UNDERFLOW
+                                    if (sl - sp < 4) return CoderResultInternal.UNDERFLOW
                                     b2 = sa[sp + 2].toInt()
                                     b3 = sa[sp + 3].toInt()
-                                    if (dl - dp < 1) return CoderResult.OVERFLOW
+                                    if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                                     da[dp] = decode(
                                         b2.toByte(),
                                         b3.toByte(),
@@ -140,17 +141,17 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                                     inputSize = 4
                                 }
 
-                                else -> return CoderResult.malformedForLength(2)
+                                else -> return CoderResultInternal.malformedForLength(2)
                             }
                         }
 
                         else -> {
-                            if (dl - dp < 1) return CoderResult.OVERFLOW
+                            if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                             if (!shiftout) {
                                 da[dp++] = (sa[sp].toInt() and 0xff).toChar()
                             } else {
-                                if (dl - dp < 1) return CoderResult.OVERFLOW
-                                if (sl - sp < 2) return CoderResult.UNDERFLOW
+                                if (dl - dp < 1) return CoderResultInternal.OVERFLOW
+                                if (sl - sp < 2) return CoderResultInternal.UNDERFLOW
                                 b2 = sa[sp + 1].toInt() and 0xff
                                 da[dp++] = decode(
                                     b1.toByte(),
@@ -163,7 +164,7 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                     }
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -184,21 +185,21 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                         ISO_SO -> shiftout = true
                         ISO_SI -> shiftout = false
                         ISO_ESC -> {
-                            if (src.remaining() < minDesignatorLength) return CoderResult.UNDERFLOW
+                            if (src.remaining() < minDesignatorLength) return CoderResultInternal.UNDERFLOW
 
                             if (findDesigBuf(src)) {
                                 inputSize = SOD.size + 1
                                 break
                             }
 
-                            if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                             b1 = src.getInt()
                             when (b1) {
                                 ISO_SS2_7 -> {
-                                    if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                                    if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                                     b2 = src.getInt()
                                     b3 = src.getInt()
-                                    if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                                    if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                                     dst.put(
                                         decode(
                                             b2.toByte(),
@@ -210,10 +211,10 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                                 }
 
                                 ISO_SS3_7 -> {
-                                    if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                                    if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                                     b2 = src.getInt()
                                     b3 = src.getInt()
-                                    if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                                    if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                                     dst.put(
                                         decode(
                                             b2.toByte(),
@@ -224,16 +225,16 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                                     inputSize = 4
                                 }
 
-                                else -> return CoderResult.malformedForLength(2)
+                                else -> return CoderResultInternal.malformedForLength(2)
                             }
                         }
 
                         else -> {
-                            if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                            if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                             if (!shiftout) {
                                 dst.put((b1 and 0xff).toChar())
                             } else {
-                                if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                                if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                                 b2 = src.getInt() and 0xff
                                 dst.put(
                                     decode(
@@ -248,10 +249,10 @@ class ISO2022_KR : ISO2022("ISO-2022-KR") {
                     }
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } catch (e: Exception) {
                 e.printStackTrace()
-                return CoderResult.OVERFLOW
+                return CoderResultInternal.OVERFLOW
             } finally {
                 src.position(mark)
             }

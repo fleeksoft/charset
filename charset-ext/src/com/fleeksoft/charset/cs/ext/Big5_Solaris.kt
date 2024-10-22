@@ -6,10 +6,10 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.CharsetMapping
 import com.fleeksoft.charset.cs.DoubleByte
 
-class Big5_Solaris : Charset("x-Big5-Solaris") {
+class Big5_Solaris : Charset("x-Big5-Solaris", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is Big5)
                 || (cs is Big5_Solaris))
     }

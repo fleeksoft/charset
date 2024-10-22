@@ -4,14 +4,15 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
 
 
-open class IBM33722 : Charset("x-IBM33722") {
+open class IBM33722 : Charset("x-IBM33722", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is IBM33722)
     }
 
@@ -43,50 +44,50 @@ open class IBM33722 : Charset("x-IBM33722") {
 
                     if (byte1 == SS2) {
                         if (sl - sp < 2) {
-                            return CoderResult.UNDERFLOW
+                            return CoderResultInternal.UNDERFLOW
                         }
                         byte1 = sa[sp + 1].toInt() and 0xff
                         inputSize = 2
                         if (byte1 < 0xa1 || byte1 > 0xfe) {   //valid first byte for G2
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         outputChar = mappingTableG2[byte1 - 0xa1]
                     } else if (byte1 == SS3) {                 //G3
                         if (sl - sp < 3) {
-                            return CoderResult.UNDERFLOW
+                            return CoderResultInternal.UNDERFLOW
                         }
                         byte1 = sa[sp + 1].toInt() and 0xff
                         byte2 = sa[sp + 2].toInt() and 0xff
                         inputSize = 3
                         if (byte1 < 0xa1 || byte1 > 0xfe) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
-                            return CoderResult.malformedForLength(3)
+                            return CoderResultInternal.malformedForLength(3)
                         }
                         outputChar =
                             mappingTableG3[((byte1 - 0xa1) * 94) + byte2 - 0xa1]
                     } else if (byte1 <= 0x9f) {                // valid single byte
                         outputChar = byteToCharTable[byte1]
                     } else if (byte1 < 0xa1 || byte1 > 0xfe) {   // invalid range?
-                        return CoderResult.malformedForLength(1)
+                        return CoderResultInternal.malformedForLength(1)
                     } else {                                     // G1
                         if (sl - sp < 2) {
-                            return CoderResult.UNDERFLOW
+                            return CoderResultInternal.UNDERFLOW
                         }
                         byte2 = sa[sp + 1].toInt() and 0xff
                         inputSize = 2
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         outputChar = mappingTableG1[((byte1 - 0xa1) * 94) + byte2 - 0xa1]
                     }
-                    if (outputChar == '\uFFFD') return CoderResult.unmappableForLength(inputSize)
-                    if (dl - dp < 1) return CoderResult.OVERFLOW
+                    if (outputChar == '\uFFFD') return CoderResultInternal.unmappableForLength(inputSize)
+                    if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                     da[dp++] = outputChar
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -104,23 +105,23 @@ open class IBM33722 : Charset("x-IBM33722") {
                     byte1 = src.getInt() and 0xff
 
                     if (byte1 == SS2) {
-                        if (!src.hasRemaining()) return CoderResult.UNDERFLOW
+                        if (!src.hasRemaining()) return CoderResultInternal.UNDERFLOW
                         byte1 = src.getInt() and 0xff
                         inputSize = 2
                         if (byte1 < 0xa1 || byte1 > 0xfe) {   //valid first byte for G2
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         outputChar = mappingTableG2[byte1 - 0xa1]
                     } else if (byte1 == SS3) {                 //G3
-                        if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
 
                         byte1 = src.getInt() and 0xff
                         if (byte1 < 0xa1 || byte1 > 0xfe) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
-                            return CoderResult.malformedForLength(3)
+                            return CoderResultInternal.malformedForLength(3)
                         }
                         inputSize = 3
                         outputChar =
@@ -128,24 +129,24 @@ open class IBM33722 : Charset("x-IBM33722") {
                     } else if (byte1 <= 0x9f) {                // valid single byte
                         outputChar = byteToCharTable[byte1]
                     } else if (byte1 < 0xa1 || byte1 > 0xfe) {   // invalid range?
-                        return CoderResult.malformedForLength(1)
+                        return CoderResultInternal.malformedForLength(1)
                     } else {                                     // G1
-                        if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         byte2 = src.getInt() and 0xff
                         if (byte2 < 0xa1 || byte2 > 0xfe) {
-                            return CoderResult.malformedForLength(2)
+                            return CoderResultInternal.malformedForLength(2)
                         }
                         inputSize = 2
                         outputChar =
                             mappingTableG1[((byte1 - 0xa1) * 94) + byte2 - 0xa1]
                     }
 
-                    if (outputChar == '\uFFFD') return CoderResult.unmappableForLength(inputSize)
-                    if (!dst.hasRemaining()) return CoderResult.OVERFLOW
+                    if (outputChar == '\uFFFD') return CoderResultInternal.unmappableForLength(inputSize)
+                    if (!dst.hasRemaining()) return CoderResultInternal.OVERFLOW
                     dst.put(outputChar)
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

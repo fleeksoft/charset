@@ -2,6 +2,7 @@ package com.fleeksoft.charset.cs
 
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CoderResult
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
@@ -46,10 +47,10 @@ class HKSCS {
                     var inSize = 1
                     var outSize = 1
                     if (c == CharsetMapping.UNMAPPABLE_DECODING) {
-                        if (sl - sp < 2) return CoderResult.UNDERFLOW
+                        if (sl - sp < 2) return CoderResultInternal.UNDERFLOW
                         val b2 = sa[sp + 1].toInt() and 0xff
                         inSize++
-                        if (b2 < b2Min || b2 > b2Max) return CoderResult.unmappableForLength(
+                        if (b2 < b2Min || b2 > b2Max) return CoderResultInternal.unmappableForLength(
                             2
                         )
                         c = decodeDouble(b1, b2) //bmp
@@ -57,14 +58,14 @@ class HKSCS {
                             c = decodeDoubleEx(b1, b2) //supp
                             if (c == CharsetMapping.UNMAPPABLE_DECODING) {
                                 c = decodeBig5(b1, b2) //big5
-                                if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(2)
+                                if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(2)
                             } else {
                                 // supplementary character in u+2xxxx area
                                 outSize = 2
                             }
                         }
                     }
-                    if (dl - dp < outSize) return CoderResult.OVERFLOW
+                    if (dl - dp < outSize) return CoderResultInternal.OVERFLOW
                     if (outSize == 2) {
                         // supplementary characters
                         da[dp++] = Surrogate.high(0x20000 + c.code)
@@ -74,7 +75,7 @@ class HKSCS {
                     }
                     sp += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -90,10 +91,10 @@ class HKSCS {
                     var outSize = 1
                     var c = decodeSingle(b1)
                     if (c == CharsetMapping.UNMAPPABLE_DECODING) {
-                        if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                        if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                         val b2 = src.getInt() and 0xff
                         inSize++
-                        if (b2 < b2Min || b2 > b2Max) return CoderResult.unmappableForLength(
+                        if (b2 < b2Min || b2 > b2Max) return CoderResultInternal.unmappableForLength(
                             2
                         )
                         c = decodeDouble(b1, b2) //bmp
@@ -101,13 +102,13 @@ class HKSCS {
                             c = decodeDoubleEx(b1, b2) //supp
                             if (c == CharsetMapping.UNMAPPABLE_DECODING) {
                                 c = decodeBig5(b1, b2) //big5
-                                if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResult.unmappableForLength(2)
+                                if (c == CharsetMapping.UNMAPPABLE_DECODING) return CoderResultInternal.unmappableForLength(2)
                             } else {
                                 outSize = 2
                             }
                         }
                     }
-                    if (dst.remaining() < outSize) return CoderResult.OVERFLOW
+                    if (dst.remaining() < outSize) return CoderResultInternal.OVERFLOW
                     if (outSize == 2) {
                         dst.put(Surrogate.high(0x20000 + c.code))
                         dst.put(Surrogate.low(0x20000 + c.code))
@@ -116,7 +117,7 @@ class HKSCS {
                     }
                     mark += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -126,7 +127,7 @@ class HKSCS {
             var sp = sp
             var dp = 0
             val sl = sp + len
-            val repl: Char = replacement[0]
+            val repl: Char = replacement()[0]
             while (sp < sl) {
                 val b1 = src[sp++].toInt() and 0xff
                 var c = decodeSingle(b1)
@@ -217,23 +218,23 @@ class HKSCS {
                             val cp: Int
                             if ((sgp().parse(c, sa, sp, sl).also { cp = it }) < 0) return _sgp!!.error()
                             bb = encodeSupp(cp)
-                            if (bb == CharsetMapping.UNMAPPABLE_ENCODING) return CoderResult.unmappableForLength(2)
+                            if (bb == CharsetMapping.UNMAPPABLE_ENCODING) return CoderResultInternal.unmappableForLength(2)
                             inSize = 2
                         } else {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
                     if (bb > MAX_SINGLEBYTE) {    // DoubleByte
-                        if (dl - dp < 2) return CoderResult.OVERFLOW
+                        if (dl - dp < 2) return CoderResultInternal.OVERFLOW
                         da[dp++] = (bb shr 8).toByte()
                         da[dp++] = bb.toByte()
                     } else {                      // SingleByte
-                        if (dl - dp < 1) return CoderResult.OVERFLOW
+                        if (dl - dp < 1) return CoderResultInternal.OVERFLOW
                         da[dp++] = bb.toByte()
                     }
                     sp += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -252,23 +253,23 @@ class HKSCS {
                             val cp: Int
                             if ((sgp().parse(c, src).also { cp = it }) < 0) return _sgp!!.error()
                             bb = encodeSupp(cp)
-                            if (bb == CharsetMapping.UNMAPPABLE_ENCODING) return CoderResult.unmappableForLength(2)
+                            if (bb == CharsetMapping.UNMAPPABLE_ENCODING) return CoderResultInternal.unmappableForLength(2)
                             inSize = 2
                         } else {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
                     if (bb > MAX_SINGLEBYTE) {  // DoubleByte
-                        if (dst.remaining() < 2) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 2) return CoderResultInternal.OVERFLOW
                         dst.put((bb shr 8).toByte())
                         dst.put((bb).toByte())
                     } else {
-                        if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                        if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                         dst.put(bb.toByte())
                     }
                     mark += inSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

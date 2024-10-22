@@ -5,9 +5,9 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.cs.SingleByte
 
-class IBM857 private constructor() : Charset("IBM857") {
+class IBM857 private constructor() : Charset("IBM857", null) {
 
-    fun contains(cs: Charset): Boolean {
+    override fun contains(cs: Charset): Boolean {
         return (cs is IBM857)
     }
 

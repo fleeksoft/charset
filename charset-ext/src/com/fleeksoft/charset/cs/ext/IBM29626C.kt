@@ -12,15 +12,16 @@ import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.cs.jis.JIS_X_0201
 import com.fleeksoft.charset.cs.jis.JIS_X_0208
 import com.fleeksoft.charset.cs.jis.JIS_X_0212
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.getInt
 import com.fleeksoft.charset.lang.Character
 
-class IBM29626C : Charset("x-IBM29626C") {
+class IBM29626C : Charset("x-IBM29626C", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII")
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII")
                 || (cs is IBM29626C))
     }
 
@@ -116,26 +117,26 @@ class IBM29626C : Charset("x-IBM29626C") {
                     outputChar = decodeSingle(b1)
                     if (outputChar == CharsetMapping.UNMAPPABLE_DECODING) { // Multibyte char
                         if (b1 == 0x8f) {           // JIS0212
-                            if (sp + 3 > sl) return CoderResult.UNDERFLOW
+                            if (sp + 3 > sl) return CoderResultInternal.UNDERFLOW
                             b1 = sa[sp + 1].toInt() and 0xff
                             b2 = sa[sp + 2].toInt() and 0xff
                             inputSize += 2
                             outputChar = decodeDoubleG3(b1, b2)
                         } else {                     // JIS0201, JIS0208
-                            if (sp + 2 > sl) return CoderResult.UNDERFLOW
+                            if (sp + 2 > sl) return CoderResultInternal.UNDERFLOW
                             b2 = sa[sp + 1].toInt() and 0xff
                             inputSize++
                             outputChar = decodeDouble(b1, b2)
                         }
                     }
                     if (outputChar == CharsetMapping.UNMAPPABLE_DECODING) { // can't be decoded
-                        return CoderResult.unmappableForLength(inputSize)
+                        return CoderResultInternal.unmappableForLength(inputSize)
                     }
-                    if (dp + 1 > dl) return CoderResult.OVERFLOW
+                    if (dp + 1 > dl) return CoderResultInternal.OVERFLOW
                     da[dp++] = outputChar
                     sp += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -156,26 +157,26 @@ class IBM29626C : Charset("x-IBM29626C") {
                     outputChar = decodeSingle(b1)
                     if (outputChar == CharsetMapping.UNMAPPABLE_DECODING) { // Multibyte char
                         if (b1 == 0x8f) {   // JIS0212
-                            if (src.remaining() < 2) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 2) return CoderResultInternal.UNDERFLOW
                             b1 = src.getInt() and 0xff
                             b2 = src.getInt() and 0xff
                             inputSize += 2
                             outputChar = decodeDoubleG3(b1, b2)
                         } else {                     // JIS0201 JIS0208
-                            if (src.remaining() < 1) return CoderResult.UNDERFLOW
+                            if (src.remaining() < 1) return CoderResultInternal.UNDERFLOW
                             b2 = src.getInt() and 0xff
                             inputSize++
                             outputChar = decodeDouble(b1, b2)
                         }
                     }
                     if (outputChar == CharsetMapping.UNMAPPABLE_DECODING) {
-                        return CoderResult.unmappableForLength(inputSize)
+                        return CoderResultInternal.unmappableForLength(inputSize)
                     }
-                    if (dst.remaining() < 1) return CoderResult.OVERFLOW
+                    if (dst.remaining() < 1) return CoderResultInternal.OVERFLOW
                     dst.put(outputChar)
                     mark += inputSize
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }
@@ -365,17 +366,17 @@ class IBM29626C : Charset("x-IBM29626C") {
                                 outputSize = 3
                             }
                         } else {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
-                    if (dl - dp < outputSize) return CoderResult.OVERFLOW
+                    if (dl - dp < outputSize) return CoderResultInternal.OVERFLOW
                     // Put the byte in the output buffer
                     for (i in 0..<outputSize) {
                         da[dp++] = outputByte[i]
                     }
                     sp++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(sp - src.arrayOffset())
                 dst.position(dp - dst.arrayOffset())
@@ -412,17 +413,17 @@ class IBM29626C : Charset("x-IBM29626C") {
                                 outputSize = 3
                             }
                         } else {
-                            return CoderResult.unmappableForLength(1)
+                            return CoderResultInternal.unmappableForLength(1)
                         }
                     }
-                    if (dst.remaining() < outputSize) return CoderResult.OVERFLOW
+                    if (dst.remaining() < outputSize) return CoderResultInternal.OVERFLOW
                     // Put the byte in the output buffer
                     for (i in 0..<outputSize) {
                         dst.put(outputByte[i])
                     }
                     mark++
                 }
-                return CoderResult.UNDERFLOW
+                return CoderResultInternal.UNDERFLOW
             } finally {
                 src.position(mark)
             }

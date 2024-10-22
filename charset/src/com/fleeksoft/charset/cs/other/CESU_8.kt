@@ -4,11 +4,12 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
-import com.fleeksoft.charset.CodingErrorAction
+import com.fleeksoft.charset.CodingErrorActionValue
 import com.fleeksoft.charset.cs.ArrayDecoder
 import com.fleeksoft.charset.cs.ArrayEncoder
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.cs.Unicode
+import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
 import com.fleeksoft.charset.io.Buffer
 import com.fleeksoft.charset.io.ByteBuffer
@@ -206,8 +207,8 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                     if (sp < sl) {
                         val b2 = sa[sp++].toInt()
                         if (isNotContinuation(b2)) {
-                            if (malformedInputAction != CodingErrorAction.REPLACE) return -1
-                            da[dp++] = replacement[0]
+                            if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
+                            da[dp++] = replacement()[0]
                             sp-- // malformedN(bb, 2) always returns 1
                         } else {
                             da[dp++] = (((b1 shl 6) xor b2) xor
@@ -216,8 +217,8 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                         }
                         continue
                     }
-                    if (malformedInputAction != CodingErrorAction.REPLACE) return -1
-                    da[dp++] = replacement[0]
+                    if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
+                    da[dp++] = replacement()[0]
                     return dp
                 } else if ((b1 shr 4) == -2) {
                     // 3 bytes, 16 bits: 1110xxxx 10xxxxxx 10xxxxxx
@@ -225,8 +226,8 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                         val b2 = sa[sp++].toInt()
                         val b3 = sa[sp++].toInt()
                         if (isMalformed3(b1, b2, b3)) {
-                            if (malformedInputAction != CodingErrorAction.REPLACE) return -1
-                            da[dp++] = replacement[0]
+                            if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
+                            da[dp++] = replacement()[0]
                             sp -= 3
                             bb = getByteBuffer(bb, sa, sp)
                             sp += malformedN(bb, 3).length()
@@ -240,16 +241,16 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                         }
                         continue
                     }
-                    if (malformedInputAction != CodingErrorAction.REPLACE) return -1
+                    if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
                     if (sp < sl && isMalformed3_2(b1, sa[sp].toInt())) {
-                        da[dp++] = replacement[0]
+                        da[dp++] = replacement()[0]
                         continue
                     }
-                    da[dp++] = replacement[0]
+                    da[dp++] = replacement()[0]
                     return dp
                 } else {
-                    if (malformedInputAction != CodingErrorAction.REPLACE) return -1
-                    da[dp++] = replacement[0]
+                    if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
+                    da[dp++] = replacement()[0]
                 }
             }
             return dp
@@ -274,11 +275,11 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
 
             private fun malformedN(src: ByteBuffer, nb: Int): CoderResult {
                 when (nb) {
-                    1, 2 -> return CoderResult.malformedForLength(1)
+                    1, 2 -> return CoderResultInternal.malformedForLength(1)
                     3 -> {
                         val b1 = src.get()
                         val b2 = src.getInt() // no need to lookup b3
-                        return CoderResult.malformedForLength(
+                        return CoderResultInternal.malformedForLength(
                             if ((b1 == 0xe0.toByte() && (b2 and 0xe0) == 0x80) ||
                                 isNotContinuation(b2)
                             ) 1 else 2
@@ -292,9 +293,9 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                             (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
                             (b1 == 0xf4 && (b2 and 0xf0) != 0x80) ||
                             isNotContinuation(b2)
-                        ) return CoderResult.malformedForLength(1)
-                        if (isNotContinuation(src.getInt())) return CoderResult.malformedForLength(2)
-                        return CoderResult.malformedForLength(3)
+                        ) return CoderResultInternal.malformedForLength(1)
+                        if (isNotContinuation(src.getInt())) return CoderResultInternal.malformedForLength(2)
+                        return CoderResultInternal.malformedForLength(3)
                     }
 
                     else -> {
@@ -333,7 +334,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 malformedNB: Int
             ): CoderResult {
                 updatePositions(src, sp, dst, dp)
-                return CoderResult.malformedForLength(malformedNB)
+                return CoderResultInternal.malformedForLength(malformedNB)
             }
 
             private fun malformedForLength(
@@ -342,7 +343,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 malformedNB: Int
             ): CoderResult {
                 src.position(mark)
-                return CoderResult.malformedForLength(malformedNB)
+                return CoderResultInternal.malformedForLength(malformedNB)
             }
 
 
@@ -351,12 +352,12 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 dst: Buffer, dp: Int, nb: Int
             ): CoderResult {
                 updatePositions(src, sp, dst, dp)
-                return if (nb == 0 || sl - sp < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
+                return if (nb == 0 || sl - sp < nb) CoderResultInternal.UNDERFLOW else CoderResultInternal.OVERFLOW
             }
 
             private fun xflow(src: Buffer, mark: Int, nb: Int): CoderResult {
                 src.position(mark)
-                return if (nb == 0 || src.remaining() < nb) CoderResult.UNDERFLOW else CoderResult.OVERFLOW
+                return if (nb == 0 || src.remaining() < nb) CoderResultInternal.UNDERFLOW else CoderResultInternal.OVERFLOW
             }
 
             private fun getByteBuffer(bb: ByteBuffer?, ba: ByteArray?, sp: Int): ByteBuffer {
@@ -427,7 +428,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 sp++
             }
             updatePositions(src, sp, dst, dp)
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         fun encodeBufferLoop(
@@ -466,7 +467,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 mark++
             }
             src.position(mark)
-            return CoderResult.UNDERFLOW
+            return CoderResultInternal.UNDERFLOW
         }
 
         override fun encodeLoop(src: CharBuffer, dst: ByteBuffer): CoderResult {
@@ -498,7 +499,7 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                     if (sgp == null) sgp = Surrogate.Parser()
                     val uc = sgp!!.parse(c, sa, sp - 1, sl)
                     if (uc < 0) {
-                        if (malformedInputAction != CodingErrorAction.REPLACE) return -1
+                        if (malformedInputAction() != CodingErrorActionValue.REPLACE) return -1
                         da[dp++] = replacement()[0]
                     } else {
                         to3Bytes(da, dp, Character.highSurrogate(uc))
@@ -522,12 +523,12 @@ internal class CESU_8 private constructor() : Unicode("CESU-8") {
                 dst: ByteBuffer, dp: Int
             ): CoderResult {
                 updatePositions(src, sp, dst, dp)
-                return CoderResult.OVERFLOW
+                return CoderResultInternal.OVERFLOW
             }
 
             private fun overflow(src: CharBuffer, mark: Int): CoderResult {
                 src.position(mark)
-                return CoderResult.OVERFLOW
+                return CoderResultInternal.OVERFLOW
             }
 
             private fun to3Bytes(da: ByteArray, dp: Int, c: Char) {

@@ -7,10 +7,10 @@ import com.fleeksoft.charset.cs.SingleByte
 import com.fleeksoft.charset.cs.SingleByte.initC2B
 
 
-class TIS_620 : Charset("TIS-620") {
+class TIS_620 : Charset("TIS-620", null) {
 
-    fun contains(cs: Charset): Boolean {
-        return ((cs.name == "US-ASCII") || (cs is TIS_620))
+    override fun contains(cs: Charset): Boolean {
+        return ((cs.name() == "US-ASCII") || (cs is TIS_620))
     }
 
     override fun newDecoder(): CharsetDecoder {
