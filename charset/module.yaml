@@ -10,3 +10,6 @@ aliases:
 
 dependencies:
   - $libs.stately.concurrency
+
+test-dependencies:
+  - ../charset-ext

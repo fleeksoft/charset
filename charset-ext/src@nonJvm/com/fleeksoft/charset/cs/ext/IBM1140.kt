@@ -15,7 +15,7 @@ class IBM1140 : Charset("IBM01140", null) {
     }
 
     override fun newDecoder(): CharsetDecoder {
-        return SingleByte.Decoder(this, Holder.b2c, false, false)
+        return SingleByte.Decoder(this, Holder.b2c, isASCIICompatible = false, isLatin1Decodable = false)
     }
 
     override fun newEncoder(): CharsetEncoder {
