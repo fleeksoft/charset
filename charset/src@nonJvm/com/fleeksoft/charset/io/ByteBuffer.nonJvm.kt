@@ -15,9 +15,9 @@ actual abstract class ByteBuffer(
     bufferMark = mark
 ), Comparable<ByteBuffer> {
     protected var bufferOffset: Int = offset
-    actual abstract override fun slice(): ByteBuffer
-    actual abstract override fun slice(index: Int, length: Int): ByteBuffer
-    actual abstract override fun duplicate(): ByteBuffer
+    abstract override fun slice(): ByteBuffer
+    abstract override fun slice(index: Int, length: Int): ByteBuffer
+    abstract override fun duplicate(): ByteBuffer
     actual abstract fun asReadOnlyBuffer(): ByteBuffer
     actual abstract fun get(): Byte
     actual abstract fun get(index: Int): Byte
@@ -171,37 +171,37 @@ actual abstract class ByteBuffer(
         return bufferOffset
     }
 
-    actual override fun position(pos: Int): ByteBuffer {
+    override fun position(pos: Int): ByteBuffer {
         super.position(pos)
         return this
     }
 
-    actual override fun limit(newLimit: Int): ByteBuffer {
+    override fun limit(newLimit: Int): ByteBuffer {
         super.limit(newLimit)
         return this
     }
 
-    actual override fun mark(): ByteBuffer {
+    override fun mark(): ByteBuffer {
         super.mark()
         return this
     }
 
-    actual override fun reset(): ByteBuffer {
+    override fun reset(): ByteBuffer {
         super.reset()
         return this
     }
 
-    actual override fun clear(): ByteBuffer {
+    override fun clear(): ByteBuffer {
         super.clear()
         return this
     }
 
-    actual override fun flip(): ByteBuffer {
+    override fun flip(): ByteBuffer {
         super.flip()
         return this
     }
 
-    actual override fun rewind(): ByteBuffer {
+    override fun rewind(): ByteBuffer {
         super.rewind()
         return this
     }
@@ -241,6 +241,15 @@ actual abstract class ByteBuffer(
             return compare(this.get(thisPos + i), other.get(thatPos + i))
         }
         return thisRem - thatRem
+    }
+
+    override fun hashCode(): Int {
+        var h = 1
+        val p = position()
+        for (i in limit() - 1 downTo p) {
+            h = 31 * h + get(i).toInt()
+        }
+        return h
     }
 
 

@@ -3,7 +3,7 @@ package com.fleeksoft.charset
 import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 
-expect abstract class Charset protected constructor(csName: String, aliases: Array<String>?) : Comparable<Charset> {
+expect abstract class Charset : Comparable<Charset> {
 
     fun name(): String
 

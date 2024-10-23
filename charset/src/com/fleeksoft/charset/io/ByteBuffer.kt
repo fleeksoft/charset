@@ -1,9 +1,6 @@
 package com.fleeksoft.charset.io
 
 expect abstract class ByteBuffer : Buffer, Comparable<ByteBuffer> {
-    abstract override fun slice(): ByteBuffer
-    abstract override fun slice(index: Int, length: Int): ByteBuffer
-    abstract override fun duplicate(): ByteBuffer
     abstract fun asReadOnlyBuffer(): ByteBuffer
 
     abstract fun get(): Byte
@@ -25,24 +22,10 @@ expect abstract class ByteBuffer : Buffer, Comparable<ByteBuffer> {
     final override fun array(): ByteArray
     final override fun hasArray(): Boolean
     final override fun arrayOffset(): Int
-    override fun position(pos: Int): ByteBuffer
-    override fun limit(newLimit: Int): ByteBuffer
-    override fun mark(): ByteBuffer
-    override fun reset(): ByteBuffer
-    override fun clear(): ByteBuffer
-    override fun flip(): ByteBuffer
-    override fun rewind(): ByteBuffer
+
     abstract fun compact(): ByteBuffer
 
     override fun compareTo(other: ByteBuffer): Int
-}
-
-
-fun ByteBuffer.getAvailableArray(): ByteArray {
-    val pos = position()
-    val arr = array().copyOfRange(pos + arrayOffset(), limit())
-    position(pos + arr.size)
-    return arr
 }
 
 fun ByteBuffer.getInt(): Int = get().toInt()

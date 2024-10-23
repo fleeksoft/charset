@@ -9,7 +9,7 @@ import com.fleeksoft.charset.io.CharBufferFactory
 import com.fleeksoft.charset.io.CoderMalfunctionError
 import kotlin.math.min
 
-actual abstract class CharsetDecoder protected actual constructor(
+actual abstract class CharsetDecoder protected constructor(
     private val _charset: Charset,
     private val averageCharsPerByte: Float,
     private val maxCharsPerByte: Float
@@ -34,8 +34,8 @@ actual abstract class CharsetDecoder protected actual constructor(
     actual fun averageCharsPerByte() = averageCharsPerByte
     actual fun malformedInputAction() = _malformedInputAction
     actual fun unmappableCharacterAction() = _unmappableCharacterAction
-    protected actual fun replacement() = _replacement
-    protected actual open fun implReplaceWith(newReplacement: String) {}
+    protected fun replacement() = _replacement
+    protected open fun implReplaceWith(newReplacement: String) {}
 
     actual fun decode(byteBuffer: ByteBuffer, outCharBuffer: CharBuffer, endOfInput: Boolean): CoderResult {
         val newState: Int = if (endOfInput) ST_END else ST_CODING
@@ -92,7 +92,8 @@ actual abstract class CharsetDecoder protected actual constructor(
         if ((n == 0) && (inByteBuffer.remaining() == 0)) return out
         reset()
         while (true) {
-            var cr: CoderResult = if (inByteBuffer.hasRemaining()) decode(inByteBuffer, out, true) else CoderResultInternal.UNDERFLOW
+            var cr: CoderResult =
+                if (inByteBuffer.hasRemaining()) decode(inByteBuffer, out, true) else CoderResultInternal.UNDERFLOW
             if (cr.isUnderflow()) cr = flush(out)
 
             if (cr.isUnderflow()) break
@@ -123,7 +124,7 @@ actual abstract class CharsetDecoder protected actual constructor(
         return CoderResultInternal.UNDERFLOW // Already flushed
     }
 
-    protected actual abstract fun decodeLoop(byteBuffer: ByteBuffer, charBuffer: CharBuffer): CoderResult
+    protected abstract fun decodeLoop(byteBuffer: ByteBuffer, charBuffer: CharBuffer): CoderResult
 
     private fun throwIllegalStateException(from: Int, to: Int) {
         throw IllegalStateException("Current state = ${stateNames[from]}, new state = ${stateNames[to]}")
@@ -143,7 +144,7 @@ actual abstract class CharsetDecoder protected actual constructor(
      * @return  A coder-result object, either {@link CoderResult#UNDERFLOW} or
      *          {@link CoderResult#OVERFLOW}
      */
-    protected actual open fun implFlush(out: CharBuffer): CoderResult {
+    protected open fun implFlush(out: CharBuffer): CoderResult {
         return CoderResultInternal.UNDERFLOW
     }
 
@@ -153,7 +154,7 @@ actual abstract class CharsetDecoder protected actual constructor(
         return this
     }
 
-    protected actual open fun implOnMalformedInput(newAction: CodingErrorAction) {}
+    protected open fun implOnMalformedInput(newAction: CodingErrorAction) {}
 
     actual fun onUnmappableCharacter(newAction: CodingErrorAction): CharsetDecoder {
         _unmappableCharacterAction = newAction
@@ -161,7 +162,7 @@ actual abstract class CharsetDecoder protected actual constructor(
         return this
     }
 
-    protected actual open fun implOnUnmappableCharacter(newAction: CodingErrorAction) {}
+    protected open fun implOnUnmappableCharacter(newAction: CodingErrorAction) {}
 
     /**
      * Resets this decoder, clearing any internal state.
@@ -183,7 +184,7 @@ actual abstract class CharsetDecoder protected actual constructor(
      * The default implementation of this method does nothing. This method
      * should be overridden by decoders that maintain internal state.
      */
-    protected actual open fun implReset() {}
+    protected open fun implReset() {}
 
     companion object {
         const val ST_RESET = 0

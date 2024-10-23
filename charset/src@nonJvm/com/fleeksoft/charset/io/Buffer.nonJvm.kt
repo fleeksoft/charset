@@ -20,7 +20,7 @@ actual abstract class Buffer(
 
     actual fun capacity(): Int = cap
     actual fun limit(): Int = bufferLimit
-    actual open fun limit(newLimit: Int): Buffer {
+    open fun limit(newLimit: Int): Buffer {
         if (newLimit > cap || newLimit < 0) {
             throw Exception("Invalid newLimit: $newLimit")
         }
@@ -33,20 +33,20 @@ actual abstract class Buffer(
     actual abstract fun isReadOnly(): Boolean
 
     actual fun position(): Int = bufferPosition
-    actual open fun position(pos: Int): Buffer {
+    open fun position(pos: Int): Buffer {
         if (bufferMark > pos) bufferMark = -1
         bufferPosition = pos
         return this
     }
 
-    actual open fun flip(): Buffer {
+    open fun flip(): Buffer {
         bufferLimit = bufferPosition
         bufferPosition = 0
         bufferMark = -1
         return this
     }
 
-    actual open fun clear(): Buffer {
+    open fun clear(): Buffer {
         bufferPosition = 0
         bufferLimit = cap
         bufferMark = -1
@@ -54,7 +54,7 @@ actual abstract class Buffer(
     }
 
     actual fun hasRemaining(): Boolean = bufferPosition < bufferLimit
-    actual open fun mark(): Buffer {
+    open fun mark(): Buffer {
         bufferMark = bufferPosition
         return this
     }
@@ -63,14 +63,14 @@ actual abstract class Buffer(
         bufferMark = -1
     }
 
-    actual open fun reset(): Buffer {
+    open fun reset(): Buffer {
         val m = bufferMark
         require(bufferMark >= 0) { "mark < 0" }
         bufferPosition = m
         return this
     }
 
-    actual open fun rewind(): Buffer {
+    open fun rewind(): Buffer {
         bufferPosition = 0
         bufferMark = -1
         return this
@@ -79,20 +79,20 @@ actual abstract class Buffer(
     actual abstract fun arrayOffset(): Int
     actual abstract fun array(): Any
     actual abstract fun hasArray(): Boolean
-    actual abstract fun slice(): Buffer
-    actual abstract fun slice(index: Int, length: Int): Buffer
-    actual abstract fun duplicate(): Buffer
+    abstract fun slice(): Buffer
+    abstract fun slice(index: Int, length: Int): Buffer
+    abstract fun duplicate(): Buffer
 
     protected fun nextPutIndex(): Int {
         val p = bufferPosition
-        if (p >= bufferLimit) throw BufferOverflowException();
+        if (p >= bufferLimit) throw BufferOverflowException()
         bufferPosition = p + 1
         return p
     }
 
     protected fun nextGetIndex(): Int {
         val p = bufferPosition
-        if (p >= bufferLimit) throw BufferUnderflowException();
+        if (p >= bufferLimit) throw BufferUnderflowException()
         bufferPosition = p + 1
         return p
     }
@@ -107,7 +107,7 @@ actual abstract class Buffer(
         if (index < 0 || index >= length)
             throw IndexOutOfBoundsException()
 
-        return index;
+        return index
     }
 
 

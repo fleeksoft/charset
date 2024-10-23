@@ -27,39 +27,9 @@ import com.fleeksoft.charset.io.CoderMalfunctionError
  * @throws  IllegalArgumentException
  * If the preconditions on the parameters do not hold
  */
-expect abstract class CharsetEncoder protected constructor(
-    _charset: Charset,
-    _averageBytesPerChar: Float,
-    _maxBytesPerChar: Float,
-    replacement: ByteArray
-) {
+expect abstract class CharsetEncoder {
     fun malformedInputAction(): CodingErrorAction
     fun unmappableCharacterAction(): CodingErrorAction
-
-    /**
-     * Initializes a new encoder.  The new encoder will have the given
-     * bytes-per-char values and its replacement will be the
-     * byte array `{`&nbsp;`(byte)'?'`&nbsp;`}`.
-     *
-     * @param  cs
-     * The charset that created this encoder
-     *
-     * @param  averageBytesPerChar
-     * A positive float value indicating the expected number of
-     * bytes that will be produced for each input character
-     *
-     * @param  maxBytesPerChar
-     * A positive float value indicating the maximum number of
-     * bytes that will be produced for each input character
-     *
-     * @throws  IllegalArgumentException
-     * If the preconditions on the parameters do not hold
-     */
-    protected constructor(
-        cs: Charset,
-        averageBytesPerChar: Float,
-        maxBytesPerChar: Float
-    )
 
     /**
      * Returns the charset that created this encoder.
@@ -104,18 +74,6 @@ expect abstract class CharsetEncoder protected constructor(
     fun replaceWith(newReplacement: ByteArray): CharsetEncoder
 
     /**
-     * Reports a change to this encoder's replacement value.
-     *
-     *
-     *  The default implementation of this method does nothing.  This method
-     * should be overridden by encoders that require notification of changes to
-     * the replacement.
-     *
-     * @param  newReplacement    The replacement value
-     */
-    protected open fun implReplaceWith(newReplacement: ByteArray)
-
-    /**
      * Tells whether or not the given byte array is a legal replacement value
      * for this encoder.
      *
@@ -152,18 +110,6 @@ expect abstract class CharsetEncoder protected constructor(
     fun onMalformedInput(newAction: CodingErrorAction): CharsetEncoder
 
     /**
-     * Reports a change to this encoder's malformed-input action.
-     *
-     *
-     *  The default implementation of this method does nothing.  This method
-     * should be overridden by encoders that require notification of changes to
-     * the malformed-input action.
-     *
-     * @param  newAction  The new action
-     */
-    protected fun implOnMalformedInput(newAction: CodingErrorAction)
-
-    /**
      * Changes this encoder's action for unmappable-character errors.
      *
      *
@@ -177,18 +123,6 @@ expect abstract class CharsetEncoder protected constructor(
      * If the precondition on the parameter does not hold
      */
     fun onUnmappableCharacter(newAction: CodingErrorAction): CharsetEncoder
-
-    /**
-     * Reports a change to this encoder's unmappable-character action.
-     *
-     *
-     *  The default implementation of this method does nothing.  This method
-     * should be overridden by encoders that require notification of changes to
-     * the unmappable-character action.
-     *
-     * @param  newAction  The new action
-     */
-    protected fun implOnUnmappableCharacter(newAction: CodingErrorAction)
 
     /**
      * Returns the average number of bytes that will be produced for each
@@ -369,23 +303,6 @@ expect abstract class CharsetEncoder protected constructor(
     fun flush(out: ByteBuffer): CoderResult
 
     /**
-     * Flushes this encoder.
-     *
-     *
-     *  The default implementation of this method does nothing, and always
-     * returns [CoderResultInternal.UNDERFLOW].  This method should be overridden
-     * by encoders that may need to write final bytes to the output buffer
-     * once the entire input sequence has been read.
-     *
-     * @param  out
-     * The output byte buffer
-     *
-     * @return  A coder-result object, either [CoderResultInternal.UNDERFLOW] or
-     * [CoderResultInternal.OVERFLOW]
-     */
-    protected open fun implFlush(out: ByteBuffer): CoderResult
-
-    /**
      * Resets this encoder, clearing any internal state.
      *
      *
@@ -396,56 +313,6 @@ expect abstract class CharsetEncoder protected constructor(
      * @return  This encoder
      */
     fun reset(): CharsetEncoder
-
-    /**
-     * Resets this encoder, clearing any charset-specific internal state.
-     *
-     *
-     *  The default implementation of this method does nothing.  This method
-     * should be overridden by encoders that maintain internal state.
-     */
-    protected open fun implReset()
-
-    /**
-     * Encodes one or more characters into one or more bytes.
-     *
-     *
-     *  This method encapsulates the basic encoding loop, encoding as many
-     * characters as possible until it either runs out of input, runs out of room
-     * in the output buffer, or encounters an encoding error.  This method is
-     * invoked by the [encode][.encode] method, which handles result
-     * interpretation and error recovery.
-     *
-     *
-     *  The buffers are read from, and written to, starting at their current
-     * positions.  At most [in.remaining()][com.fleeksoft.charset.io.Buffer.remaining] characters
-     * will be read, and at most [out.remaining()][com.fleeksoft.charset.io.Buffer.remaining]
-     * bytes will be written.  The buffers' positions will be advanced to
-     * reflect the characters read and the bytes written, but their marks and
-     * limits will not be modified.
-     *
-     *
-     *  This method returns a [CoderResult] object to describe its
-     * reason for termination, in the same manner as the [encode][.encode]
-     * method.  Most implementations of this method will handle encoding errors
-     * by returning an appropriate result object for interpretation by the
-     * [encode][.encode] method.  An optimized implementation may instead
-     * examine the relevant error action and implement that action itself.
-     *
-     *
-     *  An implementation of this method may perform arbitrary lookahead by
-     * returning [CoderResultInternal.UNDERFLOW] until it receives sufficient
-     * input.
-     *
-     * @param inBuffer
-     * The input character buffer
-     *
-     * @param outBuffer
-     * The output byte buffer
-     *
-     * @return  A coder-result object describing the reason for termination
-     */
-    protected abstract fun encodeLoop(inBuffer: CharBuffer, outBuffer: ByteBuffer): CoderResult
 
     /**
      * Convenience method that encodes the remaining content of a single input

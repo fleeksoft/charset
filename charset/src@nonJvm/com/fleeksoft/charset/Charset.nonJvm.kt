@@ -8,7 +8,8 @@ import com.fleeksoft.charset.io.ByteBuffer
 import com.fleeksoft.charset.io.CharBuffer
 import com.fleeksoft.charset.io.CharBufferFactory
 
-actual abstract class Charset protected actual constructor(private val csName: String, val aliases: Array<String>?) : Comparable<Charset> {
+actual abstract class Charset protected constructor(private val csName: String, val aliases: Array<String>?) :
+    Comparable<Charset> {
     actual fun name() = csName
 
     actual abstract fun newDecoder(): CharsetDecoder

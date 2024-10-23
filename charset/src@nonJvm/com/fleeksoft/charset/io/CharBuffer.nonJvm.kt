@@ -19,9 +19,9 @@ actual abstract class CharBuffer(
     bufferMark = mark
 ), Comparable<CharBuffer>, Appendable, Readable {
     protected var bufferOffset: Int = offset
-    actual abstract override fun slice(): CharBuffer
-    actual abstract override fun slice(index: Int, length: Int): CharBuffer
-    actual abstract override fun duplicate(): CharBuffer
+    abstract override fun slice(): CharBuffer
+    abstract override fun slice(index: Int, length: Int): CharBuffer
+    abstract override fun duplicate(): CharBuffer
     actual abstract fun asReadOnlyBuffer(): CharBuffer
 
 
@@ -64,7 +64,7 @@ actual abstract class CharBuffer(
 
     actual open fun get(index: Int, dstCharArray: CharArray, offset: Int, length: Int): CharBuffer {
         checkFromIndexSize(index, length, limit())
-        checkFromIndexSize(offset, length, dstCharArray.size);
+        checkFromIndexSize(offset, length, dstCharArray.size)
 
         getArray(index, dstCharArray, offset, length);
 
@@ -100,7 +100,7 @@ actual abstract class CharBuffer(
 
         putArray(pos, src, offset, length)
 
-        position(pos + length);
+        position(pos + length)
         return this
     }
 
@@ -207,37 +207,37 @@ actual abstract class CharBuffer(
         return bufferOffset
     }
 
-    actual final override fun position(pos: Int): CharBuffer {
+    final override fun position(pos: Int): CharBuffer {
         super.position(pos)
         return this
     }
 
-    actual final override fun limit(newLimit: Int): CharBuffer {
+    final override fun limit(newLimit: Int): CharBuffer {
         super.limit(newLimit)
         return this
     }
 
-    actual final override fun mark(): CharBuffer {
+    final override fun mark(): CharBuffer {
         super.mark()
         return this
     }
 
-    actual final override fun reset(): CharBuffer {
+    final override fun reset(): CharBuffer {
         super.reset()
         return this
     }
 
-    actual final override fun clear(): CharBuffer {
+    final override fun clear(): CharBuffer {
         super.clear()
         return this
     }
 
-    actual final override fun flip(): CharBuffer {
+    final override fun flip(): CharBuffer {
         super.flip()
         return this
     }
 
-    actual final override fun rewind(): CharBuffer {
+    final override fun rewind(): CharBuffer {
         super.rewind()
         return this
     }
@@ -350,5 +350,3 @@ actual abstract class CharBuffer(
     }
 
 }
-
-actual operator fun CharBuffer.get(index: Int): Char = this.get(index)

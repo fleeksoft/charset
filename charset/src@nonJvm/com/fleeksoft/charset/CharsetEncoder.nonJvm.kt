@@ -34,7 +34,7 @@ import kotlin.math.min
  * @throws  IllegalArgumentException
  * If the preconditions on the parameters do not hold
  */
-actual abstract class CharsetEncoder protected actual constructor(
+actual abstract class CharsetEncoder protected constructor(
     private val _charset: Charset,
     private val _averageBytesPerChar: Float,
     private val _maxBytesPerChar: Float,
@@ -77,7 +77,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      * @throws  IllegalArgumentException
      * If the preconditions on the parameters do not hold
      */
-    protected actual constructor(cs: Charset, averageBytesPerChar: Float, maxBytesPerChar: Float) : this(
+    protected constructor(cs: Charset, averageBytesPerChar: Float, maxBytesPerChar: Float) : this(
         cs,
         averageBytesPerChar, maxBytesPerChar,
         byteArrayOf('?'.code.toByte())
@@ -153,7 +153,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      *
      * @param  newReplacement    The replacement value
      */
-    protected actual open fun implReplaceWith(newReplacement: ByteArray) {
+    protected open fun implReplaceWith(newReplacement: ByteArray) {
     }
 
 
@@ -182,15 +182,15 @@ actual abstract class CharsetEncoder protected actual constructor(
         var dec: CharsetDecoder? = null
         if ((wr == null) || ((wr.get()?.also { dec = it }) == null)) {
             dec = charset().newDecoder()
-            dec.onMalformedInput(CodingErrorAction.REPORT)
-            dec.onUnmappableCharacter(CodingErrorAction.REPORT)
-            cachedDecoder = WeakReference<CharsetDecoder>(dec)
+            dec!!.onMalformedInput(CodingErrorAction.REPORT)
+            dec!!.onUnmappableCharacter(CodingErrorAction.REPORT)
+            cachedDecoder = WeakReference<CharsetDecoder>(dec!!)
         } else {
             dec?.reset()
         }
         val bb = ByteBufferFactory.wrap(repl)
         val cb: CharBuffer = CharBufferFactory.allocate((bb.remaining() * dec!!.maxCharsPerByte()).toInt())
-        val cr = dec.decode(bb, cb, true)
+        val cr = dec!!.decode(bb, cb, true)
         return !cr.isError()
     }
 
@@ -225,7 +225,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      *
      * @param  newAction  The new action
      */
-    protected actual fun implOnMalformedInput(newAction: CodingErrorAction) {}
+    protected fun implOnMalformedInput(newAction: CodingErrorAction) {}
 
     /**
      * Changes this encoder's action for unmappable-character errors.
@@ -257,7 +257,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      *
      * @param  newAction  The new action
      */
-    protected actual fun implOnUnmappableCharacter(newAction: CodingErrorAction) {}
+    protected fun implOnUnmappableCharacter(newAction: CodingErrorAction) {}
 
     /**
      * Returns the average number of bytes that will be produced for each
@@ -400,7 +400,10 @@ actual abstract class CharsetEncoder protected actual constructor(
         endOfInput: Boolean
     ): CoderResult {
         val newState = if (endOfInput) ST_END else ST_CODING
-        if ((state != ST_RESET) && (state != ST_CODING) && !(endOfInput && (state == ST_END))) throwIllegalStateException(state, newState)
+        if ((state != ST_RESET) && (state != ST_CODING) && !(endOfInput && (state == ST_END))) throwIllegalStateException(
+            state,
+            newState
+        )
         state = newState
 
         while (true) {
@@ -513,7 +516,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      * @return  A coder-result object, either [CoderResultInternal.UNDERFLOW] or
      * [CoderResultInternal.OVERFLOW]
      */
-    protected actual open fun implFlush(out: ByteBuffer): CoderResult {
+    protected open fun implFlush(out: ByteBuffer): CoderResult {
         return CoderResultInternal.UNDERFLOW
     }
 
@@ -540,7 +543,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      *  The default implementation of this method does nothing.  This method
      * should be overridden by encoders that maintain internal state.
      */
-    protected actual open fun implReset() {}
+    protected open fun implReset() {}
 
     /**
      * Encodes one or more characters into one or more bytes.
@@ -581,10 +584,7 @@ actual abstract class CharsetEncoder protected actual constructor(
      *
      * @return  A coder-result object describing the reason for termination
      */
-    protected actual abstract fun encodeLoop(
-        inBuffer: CharBuffer,
-        outBuffer: ByteBuffer
-    ): CoderResult
+    protected abstract fun encodeLoop(inBuffer: CharBuffer, outBuffer: ByteBuffer): CoderResult
 
     /**
      * Convenience method that encodes the remaining content of a single input
