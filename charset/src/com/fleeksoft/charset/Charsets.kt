@@ -7,7 +7,7 @@ import com.fleeksoft.charset.internal.CharsetLookup
 
 object Charsets {
     val UTF8 by lazy { forName("UTF-8") }
-    internal fun normalizeCharsetName(name: String): String = name.replace("-", "").replace("_", "").lowercase()
+    fun normalizeCharsetName(name: String): String = name.replace("-", "").replace("_", "").lowercase()
     fun forName(name: String): Charset {
         return CharsetLookup.forName(name)
     }
