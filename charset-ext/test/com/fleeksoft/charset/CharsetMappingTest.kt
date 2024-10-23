@@ -11,7 +11,11 @@ class CharsetMappingTest {
         CharsetNameMapping.standardCharsetMapKeys.keys.forEach { key ->
             val charset = Charsets.forName(key)
             assertNotNull(charset)
-            assertEquals(charset.name(), CharsetNameMapping.standardCharsetMapKeys[key])
+            val stdKey = CharsetNameMapping.standardCharsetMapKeys[key]
+            assertEquals(charset.name(), stdKey)
+
+            val nameKey = Charsets.normalizeCharsetName(charset.name())
+            assertEquals(stdKey, CharsetNameMapping.standardCharsetMapKeys[nameKey])
         }
     }
 
@@ -21,7 +25,11 @@ class CharsetMappingTest {
         CharsetNameMapping.extendedCharsetMapKeys.keys.forEach { key ->
             val charset = Charsets.forName(key)
             assertNotNull(charset)
-            assertEquals(charset.name(), CharsetNameMapping.extendedCharsetMapKeys[key])
+            val extKey = CharsetNameMapping.extendedCharsetMapKeys[key]
+            assertEquals(charset.name(), extKey)
+
+            val nameKey = Charsets.normalizeCharsetName(charset.name())
+            assertEquals(extKey, CharsetNameMapping.extendedCharsetMapKeys[nameKey])
         }
     }
 }
