@@ -39,9 +39,9 @@ class CharBufferTest {
         buffer.put('C')
 
         assertEquals(3, buffer.position())
-        assertEquals('A', buffer[0])
-        assertEquals('B', buffer[1])
-        assertEquals('C', buffer[2])
+        assertEquals('A', buffer.get(0))
+        assertEquals('B', buffer.get(1))
+        assertEquals('C', buffer.get(2))
     }
 
     // Test reading characters from the buffer
