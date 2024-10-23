@@ -18,6 +18,7 @@ internal actual object CharsetLookup {
         val charsetKey =
             CharsetNameMapping.standardCharsetMapKeys[normalizedKey] ?: CharsetNameMapping.extendedCharsetMapKeys[normalizedKey]
             ?: charsetName
-        return java.nio.charset.Charset.isSupported(charsetName)
+        // java throw exception for invalid names
+        return runCatching { java.nio.charset.Charset.isSupported(charsetKey) }.getOrDefault(false)
     }
 }
