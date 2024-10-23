@@ -414,7 +414,7 @@ actual abstract class CharsetEncoder protected constructor(
                 throw CoderMalfunctionError(x)
             }
 
-            if (cr.isUnderflow()) return cr
+            if (cr.isOverflow()) return cr
 
             if (cr.isUnderflow()) {
                 if (endOfInput && inCharBuffer.hasRemaining()) {
@@ -645,7 +645,7 @@ actual abstract class CharsetEncoder protected constructor(
             if (cr.isUnderflow()) cr = flush(out)
 
             if (cr.isUnderflow()) break
-            if (cr.isUnderflow()) {
+            if (cr.isOverflow()) {
                 // Ensure progress; n might be 0!
                 n = ArraysSupport.newLength(n, min(n + 1, 1024), n + 1)
                 val o: ByteBuffer = ByteBufferFactory.allocate(n)
