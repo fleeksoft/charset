@@ -2,7 +2,7 @@ name: test
 
 on:
   pull_request:
-    branches: [ "release", "develop" ]
+    branches: [ "main", "develop" ]
     paths-ignore: [ "**.md" ]
   workflow_dispatch:
 
