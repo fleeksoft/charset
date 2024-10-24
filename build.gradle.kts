@@ -49,7 +49,7 @@ allprojects {
             sourceCompatibility = JDK_VERSION
             targetCompatibility = JDK_VERSION
         }
-        compileSdk = 34
+        compileSdk = 35
         namespace = "com.fleeksoft.${project.name.replace("-", ".")}"
         defaultConfig {
             minSdk = 21
@@ -211,6 +211,7 @@ class MicroAmper(val project: Project) {
     fun applyTo() = with(project) {
         project.kotlin.sourceSets {
             ssDependsOn("native", "common")
+            ssDependsOn("native", "nonJvm")
             ssDependsOn("posix", "native")
             ssDependsOn("apple", "posix")
             ssDependsOn("appleNonWatchos", "apple")

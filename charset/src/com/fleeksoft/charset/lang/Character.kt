@@ -38,4 +38,8 @@ object Character {
         return plane < ((MAX_CODE_POINT + 1) >>> 16);*/
         return (codePoint ushr 16) < ((MAX_CODE_POINT + 1) ushr 16)
     }
+
+    fun compare(x: Char, y: Char): Int {
+        return x - y
+    }
 }
