@@ -6,11 +6,11 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.ByteBufferFactory
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CharBufferFactory
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.ByteBufferFactory
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.CharBufferFactory
+import com.fleeksoft.lang.Character
 
 abstract class ISO2022(name: String) : Charset(name, null) {
     abstract override fun newDecoder(): CharsetDecoder

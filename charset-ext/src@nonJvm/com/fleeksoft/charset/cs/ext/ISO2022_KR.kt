@@ -7,9 +7,9 @@ import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.euc.EUC_KR
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.getInt
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.getInt
 
 
 class ISO2022_KR : ISO2022("ISO-2022-KR") {

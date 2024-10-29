@@ -4,13 +4,15 @@ stately = "2.1.0"
 mavenPublish = "0.29.0"
 kotlin = "2.1.0-Beta2"
 agp = "8.5.2"
-kotlinx-atomicfu="0.25.0"
+kotlinx-atomicfu = "0.25.0"
+fleeksoft-io = "0.0.1"
 
 [libraries]
 stately-concurrency = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
+fleeksoft-io-core = { module = "com.fleeksoft.io:io-core", version.ref = "fleeksoft-io" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kmp = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref="kotlinx-atomicfu" }
+kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomicfu" }

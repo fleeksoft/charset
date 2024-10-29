@@ -5,10 +5,10 @@ import com.fleeksoft.charset.CharsetDecoder
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.getInt
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.getInt
+import com.fleeksoft.lang.Character
 
 object UTF_32Coder {
     internal const val BOM_BIG: Int = 0xFEFF

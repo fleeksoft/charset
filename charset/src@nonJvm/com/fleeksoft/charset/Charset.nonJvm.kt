@@ -4,9 +4,9 @@ package com.fleeksoft.charset
 
 import com.fleeksoft.charset.annotation.InternalCharsetApi
 import com.fleeksoft.charset.cs.ThreadLocalCoders
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CharBufferFactory
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.CharBufferFactory
 
 actual abstract class Charset protected constructor(private val csName: String, val aliases: Array<String>?) :
     Comparable<Charset> {

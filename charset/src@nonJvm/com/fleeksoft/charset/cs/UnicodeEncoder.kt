@@ -4,9 +4,9 @@ import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.lang.Character
 
 /**
  * Base class for different flavors of UTF-16 encoders

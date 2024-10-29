@@ -8,8 +8,8 @@ import com.fleeksoft.charset.cs.DoubleByte
 import com.fleeksoft.charset.cs.US_ASCII
 import com.fleeksoft.charset.cs.euc.EUC_CN
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
 import kotlin.experimental.or
 
 class ISO2022_CN : Charset("ISO-2022-CN", null) {

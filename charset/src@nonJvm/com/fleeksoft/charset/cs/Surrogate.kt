@@ -3,8 +3,8 @@ package com.fleeksoft.charset.cs
 import com.fleeksoft.charset.internal.assert
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.lang.Character
 
 object Surrogate {
     // TODO: Deprecate/remove the following redundant definitions

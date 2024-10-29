@@ -1,8 +1,8 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CoderMalfunctionError
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.exception.CoderMalfunctionError
 
 /**
  * Initializes a new encoder.  The new encoder will have the given

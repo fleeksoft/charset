@@ -7,8 +7,8 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.JLA
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
 import kotlin.math.min
 
 

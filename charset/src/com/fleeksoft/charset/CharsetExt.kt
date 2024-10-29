@@ -1,6 +1,6 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.ByteBufferFactory
+import com.fleeksoft.io.ByteBufferFactory
 
 fun String.toByteArray(charset: Charset): ByteArray {
     val result = charset.encode(this)

@@ -3,10 +3,10 @@ package com.fleeksoft.charset.cs
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.getInt
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.getInt
+import com.fleeksoft.lang.Character
 
 class HKSCS {
     open class Decoder protected constructor(

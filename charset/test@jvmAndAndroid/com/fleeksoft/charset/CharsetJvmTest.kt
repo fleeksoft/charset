@@ -1,7 +1,7 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.ByteBufferFactory
-import com.fleeksoft.charset.io.CharBufferFactory
+import com.fleeksoft.io.ByteBufferFactory
+import com.fleeksoft.io.CharBufferFactory
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.Charset

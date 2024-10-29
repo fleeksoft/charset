@@ -13,10 +13,10 @@ import com.fleeksoft.charset.cs.jis.JIS_X_0201
 import com.fleeksoft.charset.cs.jis.JIS_X_0208
 import com.fleeksoft.charset.cs.jis.JIS_X_0212
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.getInt
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.getInt
+import com.fleeksoft.lang.Character
 
 class IBM29626C : Charset("x-IBM29626C", null) {
 

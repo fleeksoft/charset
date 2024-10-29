@@ -4,11 +4,11 @@ import com.fleeksoft.charset.internal.ArraysSupport
 import com.fleeksoft.charset.internal.CoderResultInternal
 import com.fleeksoft.charset.internal.WeakReference
 import com.fleeksoft.charset.internal.assert
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.ByteBufferFactory
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CharBufferFactory
-import com.fleeksoft.charset.io.CoderMalfunctionError
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.ByteBufferFactory
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.CharBufferFactory
+import com.fleeksoft.io.exception.CoderMalfunctionError
 import kotlin.math.min
 
 /**

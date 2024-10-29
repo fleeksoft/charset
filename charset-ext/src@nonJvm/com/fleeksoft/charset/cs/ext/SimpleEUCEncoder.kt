@@ -5,9 +5,9 @@ import com.fleeksoft.charset.CharsetEncoder
 import com.fleeksoft.charset.CoderResult
 import com.fleeksoft.charset.cs.Surrogate
 import com.fleeksoft.charset.internal.CoderResultInternal
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.lang.Character
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.lang.Character
 
 abstract class SimpleEUCEncoder protected constructor(cs: Charset) : CharsetEncoder(cs, 3.0f, 4.0f) {
     protected var index1: ShortArray? = null

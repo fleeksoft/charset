@@ -3,10 +3,10 @@ package com.fleeksoft.charset.ext
 import com.fleeksoft.charset.Charset
 import com.fleeksoft.charset.Charsets
 import com.fleeksoft.charset.decodeToString
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.ByteBufferFactory
-import com.fleeksoft.charset.io.CharBuffer
-import com.fleeksoft.charset.io.CharBufferFactory
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.ByteBufferFactory
+import com.fleeksoft.io.CharBuffer
+import com.fleeksoft.io.CharBufferFactory
 import com.fleeksoft.charset.toByteArray
 
 class SampleCode {

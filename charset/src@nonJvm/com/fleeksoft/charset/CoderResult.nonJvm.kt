@@ -1,9 +1,9 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.BufferOverflowException
-import com.fleeksoft.charset.io.BufferUnderflowException
-import com.fleeksoft.charset.io.MalformedInputException
-import com.fleeksoft.charset.io.UnmappableCharacterException
+import com.fleeksoft.io.exception.BufferOverflowException
+import com.fleeksoft.io.exception.BufferUnderflowException
+import com.fleeksoft.io.exception.MalformedInputException
+import com.fleeksoft.io.exception.UnmappableCharacterException
 
 actual class CoderResult(private val type: Int, private val length: Int) {
     /**

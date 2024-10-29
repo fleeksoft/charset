@@ -1,7 +1,7 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.ByteBuffer
-import com.fleeksoft.charset.io.CharBuffer
+import com.fleeksoft.io.ByteBuffer
+import com.fleeksoft.io.CharBuffer
 
 expect abstract class Charset : Comparable<Charset> {
 

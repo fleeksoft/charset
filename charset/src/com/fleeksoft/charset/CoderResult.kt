@@ -1,8 +1,8 @@
 package com.fleeksoft.charset
 
-import com.fleeksoft.charset.io.BufferOverflowException
-import com.fleeksoft.charset.io.MalformedInputException
-import com.fleeksoft.charset.io.UnmappableCharacterException
+import com.fleeksoft.io.exception.BufferOverflowException
+import com.fleeksoft.io.exception.MalformedInputException
+import com.fleeksoft.io.exception.UnmappableCharacterException
 
 expect class CoderResult {
     /**

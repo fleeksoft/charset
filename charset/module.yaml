@@ -10,3 +10,4 @@ aliases:
 
 dependencies:
   - $libs.stately.concurrency
+  - $libs.fleeksoft.io.core: exported
