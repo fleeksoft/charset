@@ -1,9 +1,8 @@
 package com.fleeksoft.charset.ext
 
-import com.fleeksoft.charset.Charset
+import com.fleeksoft.charset.Charsets
 import com.fleeksoft.charset.decodeToString
 import com.fleeksoft.charset.toByteArray
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -12,7 +11,7 @@ class CharsetEncodingDecodingTest {
 
     private fun testEncodingDecoding(charsetName: String, original: String, expectedBytes: ByteArray) {
         // Retrieve the charset using forName
-        val charset = Charset.forName(charsetName)
+        val charset = Charsets.forName(charsetName)
         // Encode the original string to bytes using the provided charset
         val encoded: ByteArray = original.toByteArray(charset) // This line is used for encoding
         // Decode the byte array back to a string using the same charset

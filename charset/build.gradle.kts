@@ -17,14 +17,14 @@ mavenPublishing {
                 url.set("https://opensource.org/licenses/Apache-2.0")
             }
         }
-        url.set("https://github.com/fleeksoft/ksoup")
+        url.set("https://github.com/fleeksoft/charset")
         issueManagement {
             system.set("Github")
-            url.set("https://github.com/fleeksoft/ksoup/issues")
+            url.set("https://github.com/fleeksoft/charset/issues")
         }
         scm {
-            connection.set("https://github.com/fleeksoft/ksoup.git")
-            url.set("https://github.com/fleeksoft/ksoup")
+            connection.set("https://github.com/fleeksoft/charset.git")
+            url.set("https://github.com/fleeksoft/charset")
         }
         developers {
             developer {

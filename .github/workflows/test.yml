@@ -2,7 +2,7 @@ name: test
 
 on:
   pull_request:
-    branches: [ "release", "develop" ]
+    branches: [ "main", "develop" ]
     paths-ignore: [ "**.md" ]
   workflow_dispatch:
 
@@ -38,7 +38,7 @@ jobs:
         shell: bash
         working-directory: ${{ github.workspace }}
 
-      - name: Upload test results from ksoup-test module if failure
+      - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v3
         with:

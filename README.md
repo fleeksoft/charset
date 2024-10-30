@@ -2,6 +2,21 @@
 
 A Kotlin Multiplatform library providing support for standard and extended character sets, enabling seamless encoding and decoding across platforms.
 
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+[![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.fleeksoft.charset/charset.svg)](https://central.sonatype.com/artifact/com.fleeksoft.charset/charset)
+
+![badge-jvm](http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat)
+![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
+![badge-ios](http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat)
+![badge-mac](http://img.shields.io/badge/platform-macos-111111.svg?style=flat)
+![badge-tvos](http://img.shields.io/badge/platform-tvos-808080.svg?style=flat)
+![badge-tvos](http://img.shields.io/badge/platform-watchos-808080.svg?style=flat)
+![badge-linux](http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat)
+![badge-windows](http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat)
+![badge-js](https://img.shields.io/badge/platform-js-F8DB5D.svg?style=flat)
+![badge-wasm](https://img.shields.io/badge/platform-wasm-F8DB5D.svg?style=flat)
+
 ## Modules
 
 This library consists of two modules:
@@ -27,7 +42,8 @@ This library consists of two modules:
 Add the following dependencies to your project:
 
 ### Gradle
-
+###### Latest Version
+[![Maven Central](https://img.shields.io/maven-central/v/com.fleeksoft.charset/charset.svg)](https://central.sonatype.com/artifact/com.fleeksoft.charset/charset)
 ```kotlin
 commonMain.dependencies {
     implementation("com.fleeksoft.charset:charset:<version>") //only standard charsets
@@ -50,7 +66,7 @@ You can initialize a `Charset` in two ways:
 val charset: Charset = UTF_8.INSTANCE // This INSTANCE variable is available only for Standard Charsets
 
 // Or, by using forName method
-val charset: Charset = Charset.forName("UTF-8") // charset name can be any case it will be normalized in lower case and remove `-` and `_`
+val charset: Charset = Charsets.forName("UTF-8") // charset name can be any case it will be normalized in lower case and remove `-` and `_`
 ```
 
 ### Encoding & Decoding with Extension Functions
@@ -70,27 +86,27 @@ println("Decoded String: $decodedString")
 ### Encoding & Decoding with Default Instance
 ```kotlin
 //encode
-val byteArray: ByteBuffer = Charset.forName("UTF-8").encode("Hello, World!")
+val byteArray: ByteBuffer = Charsets.forName("UTF-8").encode("Hello, World!")
 
 //decode
-val decodedCharBuffer: CharBuffer = Charset.forName("UTF-8").decode(byteArray)
+val decodedCharBuffer: CharBuffer = Charsets.forName("UTF-8").decode(byteArray)
 ```
 
 ### Encoding & Decoding by Creating New Encoder and Decoder Instance
 ```kotlin
 //encoding
-val encoder = Charset.forName("UTF-8").newEncoder()
-val encodedByteBuffer = encoder.encode(CharBuffer.wrap(inputString))
+val encoder = Charsets.forName("UTF-8").newEncoder()
+val encodedByteBuffer = encoder.encode(CharBufferFactory.wrap(inputString))
 
 //decoding
-val decoder = Charset.forName("UTF-8").newDecoder()
-val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBuffer.wrap(encodedBytes))
+val decoder = Charsets.forName("UTF-8").newDecoder()
+val decodedCharBuffer1: CharBuffer = decoder.decode(ByteBufferFactory.wrap(encodedBytes))
 
 
 //decoding with CharArray
 val charArray = CharArray(5)
-val charBuffer: CharBuffer = CharBuffer.wrap(charArray)
-decoder.decode(ByteBuffer.wrap(encodedBytes), charBuffer, true)
+val charBuffer: CharBuffer = CharBufferFactory.wrap(charArray)
+decoder.decode(ByteBufferFactory.wrap(encodedBytes), charBuffer, true)
 ```
 
 ## Contributing
