@@ -2,6 +2,21 @@
 
 A Kotlin Multiplatform library providing support for standard and extended character sets, enabling seamless encoding and decoding across platforms.
 
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+[![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.fleeksoft.charset/charset.svg)](https://central.sonatype.com/artifact/com.fleeksoft.charset/charset)
+
+![badge-jvm](http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat)
+![badge-android](http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat)
+![badge-ios](http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat)
+![badge-mac](http://img.shields.io/badge/platform-macos-111111.svg?style=flat)
+![badge-tvos](http://img.shields.io/badge/platform-tvos-808080.svg?style=flat)
+![badge-tvos](http://img.shields.io/badge/platform-watchos-808080.svg?style=flat)
+![badge-linux](http://img.shields.io/badge/platform-linux-2D3F6C.svg?style=flat)
+![badge-windows](http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat)
+![badge-js](https://img.shields.io/badge/platform-js-F8DB5D.svg?style=flat)
+![badge-wasm](https://img.shields.io/badge/platform-wasm-F8DB5D.svg?style=flat)
+
 ## Modules
 
 This library consists of two modules:
@@ -27,7 +42,8 @@ This library consists of two modules:
 Add the following dependencies to your project:
 
 ### Gradle
-
+###### Latest Version
+[![Maven Central](https://img.shields.io/maven-central/v/com.fleeksoft.charset/charset.svg)](https://central.sonatype.com/artifact/com.fleeksoft.charset/charset)
 ```kotlin
 commonMain.dependencies {
     implementation("com.fleeksoft.charset:charset:<version>") //only standard charsets
