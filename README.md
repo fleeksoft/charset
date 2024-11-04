@@ -3,7 +3,7 @@
 A Kotlin Multiplatform library providing support for standard and extended character sets, enabling seamless encoding and decoding across platforms.
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
-[![Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+![License: GPL v2](https://img.shields.io/badge/License-GPLv2-blue.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/com.fleeksoft.charset/charset.svg)](https://central.sonatype.com/artifact/com.fleeksoft.charset/charset)
 
 ![badge-jvm](http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat)
@@ -113,4 +113,4 @@ decoder.decode(ByteBufferFactory.wrap(encodedBytes), charBuffer, true)
 Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for more details.
+This project is licensed under the GNU General Public License v2.0. See the [LICENSE](LICENSE.md) file for more details.
