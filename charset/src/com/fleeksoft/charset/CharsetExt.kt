@@ -11,7 +11,7 @@ fun String.toByteArray(charset: Charset): ByteArray {
     return existingArray ?: ByteArray(result.remaining()).also { result.get(it) }
 }
 
-fun ByteArray.decodeToString(charset: Charset): String {
-    val decode = charset.decode(ByteBufferFactory.wrap(this))
+fun ByteArray.decodeToString(charset: Charset, off: Int = 0, len: Int = this.size): String {
+    val decode = charset.decode(ByteBufferFactory.wrap(this, off = off, len = len))
     return decode.toString()
 }
