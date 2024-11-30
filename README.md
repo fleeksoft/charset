@@ -1,6 +1,6 @@
 # Kotlin Multiplatform Charset
 
-🚨 **Notice:** The **Charset** library has been moved to the [fleeksoft-io](https://github.com/fleeksoft/fleeksoft-io) repository.
+🚨 **Notice:** The **Charset** library has been moved to the [fleeksoft-io](https://github.com/fleeksoft/fleeksoft-io/blob/main/CharsetsReadme.md) repository.
 All future updates and documentation for Charset will now be maintained there.
 
 📖 **New Documentation**:
